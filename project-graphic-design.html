@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphic Design Project - Ahmed Samy</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+
+                    extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#6366f1',
+                            dark: '#4f46e5',
+                            accent: '#ec4899'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- Core Visuals --- */
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Animated Background Blobs */
+        .blob-cont {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #a78bfa; }
+        .blob-2 { bottom: -10%; right: -10%; width: 50vw; height: 50vw; background: #f472b6; animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: #38bdf8; animation-delay: -10s; }
+
+        body.dark .blob-1 { background: #4c1d95; opacity: 0.2; }
+        body.dark .blob-2 { background: #831843; opacity: 0.2; }
+        body.dark .blob-3 { background: #0c4a6e; opacity: 0.2; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, -50px) scale(1.1); }
+        }
+
+        /* Modern Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        body.dark .glass {
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Typography & Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.dark .text-gradient {
+            background: linear-gradient(135deg, #818cf8 0%, #f472b6 100%);
+        }
+
+        /* Gallery Overlay */
+        .card-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        /* Modal */
+        .pg-modal { position: fixed; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.85); z-index:100; backdrop-filter: blur(5px); opacity: 0; animation: fadeIn 0.3s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        
+        /* Smooth Loader */
+        .fade-up { opacity: 0; transform: translateY(20px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0b0f19] dark:text-slate-100 min-h-screen">
+
+    <div class="blob-cont">
+        <div class="blob blob-1 rounded-full"></div>
+        <div class="blob blob-2 rounded-full"></div>
+        <div class="blob blob-3 rounded-full"></div>
+    </div>
+
+    <nav class="fixed top-0 left-0 w-full z-50 px-4 py-4">
+        <div class="glass max-w-7xl mx-auto rounded-full px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="font-display font-bold text-xl tracking-tight hover:opacity-80 transition">
+                Ahmed<span class="text-indigo-500">.Design</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="px-5 py-2 rounded-full text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition flex items-center gap-2">
+                    <i class="fas fa-arrow-left text-xs"></i> Back
+                </a>
+                <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-indigo-500 hover:text-white transition">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:inline"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-40 pb-20 px-4 md:px-8">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider mb-6 fade-up">
+                <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                Visual Design Portfolio
+            </div>
+            
+            <h1 class="font-display text-6xl md:text-8xl font-bold mb-8 leading-tight fade-up" style="animation-delay: 0.1s;">
+                Crafting Digital <br>
+                <span class="text-gradient">Visual Experiences</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed fade-up" style="animation-delay: 0.2s;">
+                A comprehensive showcase of branding, social media creatives, and visual communication designed to captivate audiences and elevate brand identity.
+            </p>
+
+
+            <!-- Featured Collection (random pick on each refresh) -->
+            <section id="featured-collection" class="mt-8">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Featured Collection</h3>
+                        <div class="text-sm text-gray-500">Refresh page to see another pick</div>
+                    </div>
+                    <div id="featuredPick" class="rounded-2xl overflow-hidden"></div>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <section class="py-10 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass glass-card p-8 rounded-3xl relative overflow-hidden fade-up">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-xl"></div>
+                <div class="text-4xl font-display font-bold text-blue-600 dark:text-blue-400 mb-2">200+</div>
+                <p class="font-medium text-slate-500 dark:text-slate-400">Creative Assets Delivered</p>
+            </div>
+            <div class="glass glass-card p-8 rounded-3xl relative overflow-hidden fade-up" style="animation-delay: 0.1s;">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-pink-500/10 rounded-full blur-xl"></div>
+                <div class="text-4xl font-display font-bold text-pink-600 dark:text-pink-400 mb-2">45%</div>
+                <p class="font-medium text-slate-500 dark:text-slate-400">Avg. CTR Increase</p>
+            </div>
+            <div class="glass glass-card p-8 rounded-3xl relative overflow-hidden fade-up" style="animation-delay: 0.2s;">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl"></div>
+                <div class="text-4xl font-display font-bold text-emerald-600 dark:text-emerald-400 mb-2">12</div>
+                <p class="font-medium text-slate-500 dark:text-slate-400">Brand Identities Built</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="works" class="py-20 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                <div>
+                    <h2 class="font-display text-4xl font-bold mb-3">Selected Works</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Explore the visual archive.</p>
+                </div>
+                
+                <div class="glass p-1.5 rounded-xl flex gap-1">
+                    <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium transition bg-white dark:bg-slate-700 shadow-sm" data-filter="all">All</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition hover:bg-white/50 dark:hover:bg-slate-700/50" data-filter="Postes">Posters</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition hover:bg-white/50 dark:hover:bg-slate-700/50" data-filter="Logoes">Logos</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition hover:bg-white/50 dark:hover:bg-slate-700/50" data-filter="Mine">Personal</button>
+                </div>
+            </div>
+
+            <div class="relative max-w-md mb-10">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input id="pgSearch" type="text" placeholder="Search specific files..." 
+                       class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none transition backdrop-blur-sm">
+            </div>
+
+            <div id="pgGallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[200px]">
+                </div>
+            
+            <div id="emptyState" class="hidden text-center py-20">
+                <div class="inline-block p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+                    <i class="fas fa-folder-open text-3xl text-slate-400"></i>
+                </div>
+                <p class="text-slate-500">No projects found matching criteria.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-slate-200 dark:border-slate-800 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="font-display font-bold text-xl">Ahmed<span class="text-indigo-500">.Design</span></div>
+            <div class="text-slate-500 text-sm">© 2026 All Rights Reserved.</div>
+            <div class="flex gap-4">
+                <a href="https://www.behance.net/Ahmed-and-Mohamed" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:text-indigo-500 transition"><i class="fab fa-behance"></i></a>
+                <a href="https://www.linkedin.com/in/a7madsamy" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:text-indigo-500 transition"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/aaa_sami_aaa?igsh=YzNwMm94M3Zub21t" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:text-indigo-500 transition"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        window.onload = () => {
+            gsap.to(".fade-up", {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+        };
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Check local storage or preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // --- Gallery Logic (Consolidated & Cleaned) ---
+        (function() {
+            const gallery = document.getElementById('pgGallery');
+            const searchInput = document.getElementById('pgSearch');
+            const emptyState = document.getElementById('emptyState');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            let allData = [];
+            let currentFilter = 'all';
+
+            // Helper: Get Extension
+            function extOf(name) {
+                const m = name.match(/\.([0-9a-zA-Z]+)(?:$|\?)/);
+                return m ? m[1].toLowerCase() : '';
+            }
+            
+            function isImage(name) {
+                return ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extOf(name));
+            }
+
+            // 1. Load Data
+            async function initGallery() {
+                try {
+                    // Note: Ensure this file exists
+                    const res = await fetch('designes-manifest.json');
+                    allData = await res.json();
+                    renderGallery();
+                    checkUrlFocus();
+                    // Featured Collection: pick a random image from the manifest on each load
+                    try{
+                        const featuredContainer = document.getElementById('featuredPick');
+                        if(featuredContainer && allData.length){
+                            const imagesOnly = allData.filter(it => it.type === 'image' || isImage(it.name));
+                            if(imagesOnly.length){
+                                const pick = imagesOnly[Math.floor(Math.random()*imagesOnly.length)];
+                                const globalIdx = allData.findIndex(d=> d.path === pick.path);
+                                featuredContainer.innerHTML = `
+                                    <div class="relative rounded-2xl overflow-hidden cursor-pointer shadow-lg">
+                                        <img src="${encodeURI(pick.path)}" alt="${pick.name}" class="w-full h-64 object-cover">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
+                                            <div class="text-white">
+                                                <div class="font-bold text-lg">${pick.name}</div>
+                                                <div class="text-sm opacity-80">${pick.folder}</div>
+                                            </div>
+                                            <button id="featuredOpen" class="ml-auto px-3 py-2 btn-primary rounded-lg">Preview</button>
+                                        </div>
+                                    </div>
+                                `;
+                                // attach handler
+                                const btn = document.getElementById('featuredOpen');
+                                if(btn){ btn.addEventListener('click', (e)=> { e.stopPropagation(); openModal(globalIdx); }); }
+                                // also open when clicking the image area
+                                const area = featuredContainer.querySelector('div');
+                                if(area) area.addEventListener('click', ()=> openModal(globalIdx));
+                            }
+                        }
+                    }catch(err){ console.warn('Featured pick error', err); }
+                } catch (e) {
+                    console.warn('Manifest loading failed. Using mock data for preview if local file missing.', e);
+                    // Mock data for demonstration if JSON fails
+                    allData = []; 
+                    emptyState.classList.remove('hidden');
+                }
+            }
+
+            // 2. Render Cards
+            function renderGallery(filter = 'all', searchTerm = '') {
+                currentFilter = filter;
+                gallery.innerHTML = '';
+
+                const filtered = allData.filter(item => {
+                    const matchesFilter = filter === 'all' || item.folder === filter;
+                    const matchesSearch = !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    return matchesFilter && matchesSearch;
+                });
+
+                if (filtered.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                emptyState.classList.add('hidden');
+
+                filtered.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    // Add 'group' for hover effects
+                    card.className = 'group relative rounded-2xl overflow-hidden cursor-pointer bg-slate-200 dark:bg-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1';
+                    
+                    // Aspect ratio logic (make some items span 2 rows if vertical - simplified)
+                    // For now, standard grid, but visual style improved
+                    
+                    const encodedPath = encodeURI(item.path);
+                    
+                    let contentHTML = '';
+                    if(isImage(item.name)) {
+                        contentHTML = `<img src="${encodedPath}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">`;
+                    } else {
+                        contentHTML = `
+                            <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 group-hover:text-indigo-500 transition">
+                                <i class="fas ${item.type === 'pdf' ? 'fa-file-pdf' : 'fa-folder'} text-4xl mb-2"></i>
+                                <span class="text-xs font-bold uppercase tracking-wider">${extOf(item.name)}</span>
+                            </div>
+                        `;
+                    }
+
+                    card.innerHTML = `
+                        ${contentHTML}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4">
+                            <h3 class="text-white font-medium text-sm truncate">${item.name}</h3>
+                            <p class="text-white/80 text-xs capitalize opacity-90">${item.folder}</p>
+                        </div>
+                    `;
+
+                    card.onclick = () => openModal(allData.indexOf(item));
+                    gallery.appendChild(card);
+                });
+            }
+
+            // 3. Filtering UI
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-white', 'dark:bg-slate-700', 'shadow-sm');
+                        b.classList.add('hover:bg-white/50');
+                    });
+                    btn.classList.add('bg-white', 'dark:bg-slate-700', 'shadow-sm');
+                    btn.classList.remove('hover:bg-white/50');
+                    
+                    renderGallery(btn.dataset.filter, searchInput.value);
+                });
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                renderGallery(currentFilter, e.target.value);
+            });
+
+            // 4. Modal Logic
+            let currentIndex = -1;
+
+            function openModal(index) {
+                if(index < 0 || index >= allData.length) return;
+                currentIndex = index;
+                const item = allData[index];
+                
+                // Create Modal DOM
+                const modal = document.createElement('div');
+                modal.className = 'pg-modal';
+                
+                const isImg = isImage(item.name);
+                
+                modal.innerHTML = `
+                    <div class="relative w-full max-w-6xl h-full md:h-auto p-4 flex flex-col items-center justify-center">
+                        <button class="absolute top-4 right-4 md:top-0 md:right-0 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-md transition close-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        
+                        <button class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/20 hover:bg-black/50 text-white flex items-center justify-center backdrop-blur-md transition prev-btn hidden md:flex">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/20 hover:bg-black/50 text-white flex items-center justify-center backdrop-blur-md transition next-btn hidden md:flex">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col w-full md:w-auto">
+                            <div class="p-1 overflow-auto bg-slate-100 dark:bg-black flex justify-center items-center min-h-[300px]">
+                                ${ isImg 
+                                    ? `<img src="${encodeURI(item.path)}" class="max-h-[75vh] max-w-full object-contain shadow-lg" alt="${item.name}">`
+                                    : `<iframe src="${encodeURI(item.path)}" class="w-[80vw] h-[75vh] border-0"></iframe>`
+                                }
+                            </div>
+                            <div class="p-4 flex justify-between items-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 dark:text-white">${item.name}</h3>
+                                    <p class="text-xs text-slate-500">${item.folder}</p>
+                                </div>
+                                <a href="${encodeURI(item.path)}" download class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition font-medium">
+                                    <i class="fas fa-download mr-2"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+                document.body.style.overflow = 'hidden';
+
+                // Event Listeners
+                const close = () => { modal.remove(); document.body.style.overflow = ''; };
+                const prev = () => { close(); openModal((currentIndex - 1 + allData.length) % allData.length); };
+                const next = () => { close(); openModal((currentIndex + 1) % allData.length); };
+
+                modal.querySelector('.close-modal').onclick = close;
+                modal.querySelector('.prev-btn').onclick = (e) => { e.stopPropagation(); prev(); };
+                modal.querySelector('.next-btn').onclick = (e) => { e.stopPropagation(); next(); };
+                modal.onclick = (e) => { if(e.target === modal) close(); };
+
+                // Keyboard Nav
+                const keyHandler = (e) => {
+                    if(e.key === 'Escape') { close(); document.removeEventListener('keydown', keyHandler); }
+                    if(e.key === 'ArrowLeft') { prev(); document.removeEventListener('keydown', keyHandler); }
+                    if(e.key === 'ArrowRight') { next(); document.removeEventListener('keydown', keyHandler); }
+                };
+                document.addEventListener('keydown', keyHandler);
+            }
+
+            // 5. URL Params (for direct links)
+            function checkUrlFocus() {
+                const params = new URLSearchParams(window.location.search);
+                const focus = params.get('focus');
+                if(focus) {
+                    const decoded = decodeURIComponent(focus);
+                    const idx = allData.findIndex(d => d.path.includes(decoded));
+                    if(idx !== -1) setTimeout(() => openModal(idx), 500);
+                }
+            }
+
+            // Initialize
+            initGallery();
+
+        })();
+    </script>
+</body>
+</html>

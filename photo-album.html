@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Photo Album — Memories</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f1e8;
+      background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px),
+        radial-gradient(ellipse at 20% 30%, rgba(139, 90, 60, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(166, 138, 111, 0.02) 0%, transparent 50%);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* Header */
+    header {
+      padding: 40px 20px 40px;
+      background: linear-gradient(180deg, rgba(245, 241, 232, 0.98) 0%, rgba(245, 241, 232, 0.95) 50%, rgba(245, 241, 232, 0) 100%);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(139, 90, 60, 0.08);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(139, 90, 60, 0.1);
+      border: 1px solid rgba(139, 90, 60, 0.2);
+      border-radius: 20px;
+      color: #8b5a3c;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .back-button:hover {
+      background: rgba(139, 90, 60, 0.15);
+      border-color: rgba(139, 90, 60, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+    }
+
+    .back-button svg {
+      transition: transform 0.3s ease;
+    }
+
+    .back-button:hover svg {
+      transform: translateX(-2px);
+    }
+
+    .header-text {
+      flex: 1;
+      text-align: center;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #d4a574, transparent);
+      opacity: 0.6;
+    }
+
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 600;
+      color: #8b5a3c;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      position: relative;
+      text-shadow: 0 1px 2px rgba(139, 90, 60, 0.1);
+    }
+
+    header h1::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #d4a574, #b8956a, #d4a574);
+      border-radius: 1px;
+      opacity: 0.8;
+    }
+
+    header p {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: #a68a6f;
+      font-weight: 300;
+      font-style: italic;
+      opacity: 0.85;
+      position: relative;
+      margin-top: 16px;
+    }
+
+    /* Album Section */
+    .album-section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    /* Album Layout */
+    .album-container {
+      position: relative;
+      min-height: 400px;
+    }
+
+    .photo-item {
+      position: absolute;
+      cursor: pointer;
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0;
+      transform: translateY(60px) scale(0.92) rotate(0deg);
+      will-change: transform, opacity;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15)) 
+              drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
+    }
+
+    .photo-item.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .photo-item:hover {
+      transform: scale(1.08) translateY(-8px) !important;
+      z-index: 50 !important;
+      filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.25)) 
+              drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Polaroid-style frame */
+    .photo-frame {
+      background: linear-gradient(135deg, #fefefe 0%, #fafafa 100%);
+      padding: 15px 15px 50px;
+      box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.06),
+        0 3px 8px rgba(0, 0, 0, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.03);
+      border-radius: 2px;
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .photo-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(0, 0, 0, 0.02) 100%);
+      pointer-events: none;
+      border-radius: 2px;
+    }
+
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ddd 20%, #ddd 80%, transparent);
+      border-radius: 1px;
+      opacity: 0.6;
+    }
+
+    .photo-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 1px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+
+    /* Image size variations */
+    .photo-item.size-small {
+      width: 180px;
+    }
+
+    .photo-item.size-medium {
+      width: 240px;
+    }
+
+    .photo-item.size-large {
+      width: 300px;
+    }
+
+    .photo-item.size-portrait {
+      width: 200px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .lightbox-content {
+      max-width: 95vw;
+      max-height: 95vh;
+      position: relative;
+      transform: scale(0.88) translateY(20px);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .lightbox.active .lightbox-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 26px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: scale(1.12) rotate(90deg);
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .photo-item {
+        position: relative !important;
+        width: 100% !important;
+        max-width: 280px;
+        margin: 0 auto 30px !important;
+        transform: none !important;
+      }
+
+      .photo-item.visible {
+        transform: none !important;
+      }
+
+      .photo-item:hover {
+        transform: scale(1.02) translateY(-3px) !important;
+      }
+
+      .album-container {
+        min-height: auto;
+      }
+
+      header {
+        padding: 30px 15px 25px;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+
+      .back-button {
+        align-self: flex-start;
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .header-text {
+        text-align: center;
+        width: 100%;
+      }
+
+      header h1 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        margin-bottom: 6px;
+        letter-spacing: -0.01em;
+      }
+
+      header p {
+        font-size: clamp(0.85rem, 4vw, 1rem);
+        opacity: 0.75;
+      }
+
+      .lightbox-close {
+        top: 10px;
+        right: 10px;
+      }
+    }
+
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Loading placeholder */
+    .photo-img[loading="lazy"] {
+      background: linear-gradient(110deg, #e8e3d8 8%, #f0ebe0 18%, #e8e3d8 33%);
+      background-size: 200% 100%;
+      animation: loading 2s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="back-button" title="Back to Portfolio">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back
+      </a>
+      <div class="header-text">
+        <h1>Photo Album</h1>
+        <p>A collection of memories, moments, and milestones</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Photo Album -->
+  <section class="album-section">
+    <div class="album-container" id="album-container"></div>
+
+    <!-- Diagnostic Panel (shows if there are issues) -->
+    <div id="diagnostic-panel" class="hidden fixed top-4 right-4 bg-red-100 border border-red-300 rounded-lg p-4 shadow-lg max-w-sm z-50">
+      <h3 class="text-red-800 font-bold mb-2">⚠️ Image Loading Issues</h3>
+      <p class="text-red-700 text-sm mb-3">Some images failed to load. This usually means the assets folder wasn't uploaded to your server.</p>
+      <div class="space-y-2">
+        <button onclick="checkImages()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+          Quick Check
+        </button>
+        <button onclick="diagnoseDeployment()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm ml-2">
+          Full Diagnostic
+        </button>
+      </div>
+      <button onclick="document.getElementById('diagnostic-panel').classList.add('hidden')" class="text-red-600 hover:text-red-800 text-sm mt-2">
+        Close
+      </button>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="" class="lightbox-img" />
+    </div>
+  </div>
+
+    <script>
+    // ===========================================
+    // 🚨 DEPLOYMENT FIX: Image Loading Issues
+    // ===========================================
+    // If images show 404 errors, the issue is:
+    // 1. assets/images/photos/ folder NOT uploaded to server
+    // 2. Wrong folder structure on server
+    // 3. Case sensitivity (assets vs Assets)
+    // 4. File permissions (644 for files, 755 for folders)
+    //
+    // QUICK FIX: Upload assets/ folder to your server root
+    // ===========================================
+
+    // IMMEDIATE DIAGNOSTIC - Run this right away in console!
+    window.checkImages = function() {
+      console.clear();
+      console.log('🔍 IMMEDIATE IMAGE CHECK...\n');
+
+      const testImg = 'whatsapp-image-2026-01-11-at-83445-pm.jpeg';
+      const img = new Image();
+
+      img.onload = function() {
+        console.log('✅✅✅ SUCCESS! Images are accessible ✅✅✅');
+        console.log('   Path: assets/images/photos/');
+        console.log('   Your photo album should work now!');
+      };
+
+      img.onerror = function() {
+        console.log('❌❌❌ IMAGES NOT FOUND ❌❌❌');
+        console.log('   Sevalla deployment filtered out assets folder');
+        console.log('\n🔧 SOLUTIONS:');
+        console.log('   1. Use external hosting (recommended):');
+        console.log('      - Upload to Imgur/Cloudinary');
+        console.log('      - Run: setupExternalHosting()');
+        console.log('   2. Contact Sevalla support');
+        console.log('   3. Use different deployment method');
+        console.log('\n   Test URL: ' + window.location.origin + '/assets/images/photos/' + testImg);
+      };
+
+      img.src = window.location.origin + '/assets/images/photos/' + testImg;
+    };
+
+    // EXTERNAL HOSTING SETUP - Use this if Sevalla filters assets
+    window.setupExternalHosting = function() {
+      console.log('🖼️ EXTERNAL IMAGE HOSTING SETUP');
+      console.log('================================');
+      console.log('Since Sevalla filters assets during build, use external hosting:');
+      console.log('');
+      console.log('1. 📸 Upload all 33 photos to Imgur album:');
+      console.log('   - Go to imgur.com');
+      console.log('   - Create new album');
+      console.log('   - Upload all photos from assets/images/photos/');
+      console.log('   - Copy album URL');
+      console.log('');
+      console.log('2. 🔗 Get direct image URLs:');
+      console.log('   - In album view, right-click each image');
+      console.log('   - Copy image address (direct link)');
+      console.log('');
+      console.log('3. 📝 Update photo-album.html:');
+      console.log('   - Replace local paths with Imgur URLs');
+      console.log('   - Run: convertToImgurUrls()');
+      console.log('');
+      console.log('4. 🚀 Redeploy:');
+      console.log('   - Commit changes');
+      console.log('   - Push to Git');
+      console.log('   - Sevalla will deploy (no large assets = success)');
+      console.log('================================');
+    };
+
+    // All photos in one collection
+    const photos = [
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83445-pm.jpeg', size: 'medium', rotation: -2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83532-pm.jpeg', size: 'large', rotation: 1.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83534-pm.jpeg', size: 'medium', rotation: 3 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83536-pm.jpeg', size: 'medium', rotation: -1.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83704-pm.jpeg', size: 'portrait', rotation: 2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83706-pm.jpeg', size: 'medium', rotation: -2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83707-pm.jpeg', size: 'large', rotation: 1 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83708-pm.jpeg', size: 'portrait', rotation: -3 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83712-pm.jpeg', size: 'medium', rotation: 2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83715-pm.jpeg', size: 'medium', rotation: -1.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83716-pm.jpeg', size: 'large', rotation: 2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83717-pm.jpeg', size: 'medium', rotation: -2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83719-pm.jpeg', size: 'portrait', rotation: 1.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83724-pm.jpeg', size: 'large', rotation: -2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83726-pm.jpeg', size: 'medium', rotation: 3 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83731-pm.jpeg', size: 'portrait', rotation: -1 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83732-pm.jpeg', size: 'small', rotation: 2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83734-pm.jpeg', size: 'medium', rotation: -3 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83736-pm.jpeg', size: 'portrait', rotation: 1 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83737-pm.jpeg', size: 'large', rotation: -2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83739-pm.jpeg', size: 'medium', rotation: 2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83743-pm.jpeg', size: 'large', rotation: 3 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83811-pm.jpeg', size: 'medium', rotation: -2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83933-pm.jpeg', size: 'large', rotation: 1.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83940-pm.jpeg', size: 'medium', rotation: -3 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83949-pm.jpeg', size: 'portrait', rotation: 2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83952-pm.jpeg', size: 'medium', rotation: 2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83953-pm.jpeg', size: 'small', rotation: -2 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83954-pm.jpeg', size: 'portrait', rotation: 1 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84009-pm.jpeg', size: 'large', rotation: 1 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84022-pm.jpeg', size: 'large', rotation: -2.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84023-pm.jpeg', size: 'medium', rotation: 1.5 },
+      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84027-pm-1.jpeg', size: 'large', rotation: -1.5 }
+    ];
+
+    // Size mapping
+    const sizeMap = {
+      small: 180,
+      medium: 240,
+      large: 300,
+      portrait: 200
+    };
+
+    // Create photo items with natural positioning
+    function createPhotoItem(photo, index, container) {
+      const item = document.createElement('div');
+      item.className = `photo-item size-${photo.size}`;
+      item.style.transform = `rotate(${photo.rotation}deg)`;
+      
+      // Natural random positioning
+      const containerWidth = container.offsetWidth || 1200;
+      const baseX = (index * 280) % (containerWidth - 350);
+      const baseY = Math.floor((index * 280) / (containerWidth - 350)) * 320;
+      const randomX = (Math.random() - 0.5) * 100;
+      const randomY = (Math.random() - 0.5) * 80;
+      
+      item.style.left = `${Math.max(20, baseX + randomX)}px`;
+      item.style.top = `${Math.max(20, baseY + randomY)}px`;
+
+      item.innerHTML = `
+        <div class="photo-frame">
+          <img src="${photo.src}"
+               alt="Photo"
+               class="photo-img"
+               loading="lazy"
+               onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\'%3E%3Crect fill=\\'%23e8e3d8\\' width=\\'300\\' height=\\'200\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'sans-serif\\' font-size=\\'14\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\'%3EPhoto%3C/text%3E%3C/svg%3E';" />
+        </div>
+      `;
+
+      item.addEventListener('click', () => openLightbox(photo.src, 'Photo'));
+      container.appendChild(item);
+
+      return item;
+    }
+
+    // Render all photos
+    function renderPhotos() {
+      const container = document.getElementById('album-container');
+      if (!container) return;
+
+      photos.forEach((photo, index) => {
+        setTimeout(() => {
+          const item = createPhotoItem(photo, index, container);
+          // Trigger animation with slight variation
+          setTimeout(() => item.classList.add('visible'), 30 + (index % 3) * 20);
+        }, index * 80);
+      });
+    }
+
+    // Lightbox functions
+    function openLightbox(src, alt) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || 'Photo';
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      lightbox.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close lightbox on background click
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this || e.target.classList.contains('lightbox-content')) {
+        closeLightbox();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+
+    // ===========================================
+    // 🚀 DEPLOYMENT DIAGNOSTIC TOOL
+    // ===========================================
+    // Run this on your DEPLOYED site to identify image issues:
+    // 1. Open browser console (F12)
+    // 2. Run: diagnoseDeployment()
+    // ===========================================
+
+    window.diagnoseDeployment = function() {
+      console.clear();
+      console.log('🔍 DEPLOYMENT DIAGNOSTIC - Finding image issues...\n');
+
+      const testImg = 'whatsapp-image-2026-01-11-at-83445-pm.jpeg';
+      const paths = [
+        'assets/images/photos/',
+        './assets/images/photos/',
+        '/assets/images/photos/',
+        'imgs/pics/',
+        './imgs/pics/',
+        '/imgs/pics/',
+        'pics/',
+        './pics/',
+        '/pics/'
+      ];
+
+      let workingPath = null;
+      let tested = 0;
+      const total = paths.length;
+
+      return new Promise((resolve) => {
+        paths.forEach((basePath, index) => {
+          setTimeout(() => {
+            const img = new Image();
+            const fullUrl = window.location.origin + (basePath.startsWith('/') ? '' : '/') + basePath + testImg;
+
+            img.onload = function() {
+              tested++;
+              if (!workingPath) {
+                workingPath = basePath;
+                console.log('✅✅✅ SOLUTION FOUND! ✅✅✅');
+                console.log(`   Working path: "${basePath}"`);
+                console.log(`   Full URL: ${fullUrl}`);
+                console.log('\n📋 TO FIX YOUR DEPLOYMENT:');
+                console.log(`   1. Create folder structure: ${basePath.replace(/^\.\//, '').replace(/\/$/, '')}`);
+                console.log(`   2. Upload all images to: ${window.location.origin}/${basePath.replace(/^\.\//, '')}`);
+                console.log('   3. Ensure file permissions: 644 (files), 755 (folders)');
+                console.log('\n🔄 Or run: fixImagePaths("' + basePath + '")');
+              }
+
+              if (tested === total) {
+                if (!workingPath) {
+                  console.log('\n❌❌❌ NO SOLUTION FOUND ❌❌❌');
+                  console.log('   Images not found at any tested path');
+                  console.log('   Check if assets folder was uploaded!');
+                  console.log('\n🔍 Manual test URLs:');
+                  paths.forEach(p => {
+                    console.log(`   ${window.location.origin}${p}${testImg}`);
+                  });
+                }
+                resolve(workingPath);
+              }
+            };
+
+            img.onerror = function() {
+              tested++;
+              console.log(`❌ Failed: ${basePath}`);
+              if (tested === total && !workingPath) {
+                console.log('\n❌❌❌ NO SOLUTION FOUND ❌❌❌');
+                console.log('   Images not found at any tested path');
+                console.log('   Check if assets folder was uploaded!');
+                resolve(null);
+              }
+            };
+
+            img.src = fullUrl;
+          }, index * 500);
+        });
+      });
+    };
+
+    // Quick fix function (use result from diagnoseDeployment)
+    window.fixImagePaths = function(correctPath) {
+      if (!correctPath) {
+        console.error('❌ No path provided! Run diagnoseDeployment() first.');
+        return;
+      }
+
+      console.log(`🔧 Updating all image paths to: "${correctPath}"`);
+      photos.forEach((photo, index) => {
+        const filename = photo.src.split('/').pop();
+        photo.src = correctPath + filename;
+      });
+
+      // Reload images
+      const imgElements = document.querySelectorAll('.photo-img');
+      imgElements.forEach(img => {
+        const filename = img.src.split('/').pop();
+        const newUrl = window.location.origin + (correctPath.startsWith('/') ? '' : '/') + correctPath + filename;
+        img.src = newUrl;
+      });
+
+      console.log('✅✅✅ Paths updated! Refresh page to see changes. ✅✅✅');
+    };
+
+    // CONVERT TO EXTERNAL HOSTING URLs
+    window.convertToImgurUrls = function() {
+      console.log('🖼️ IMGUR URL CONVERSION HELPER');
+      console.log('===============================');
+      console.log('Replace these local paths with your Imgur URLs:');
+      console.log('');
+
+      photos.forEach((photo, index) => {
+        const filename = photo.src.split('/').pop();
+        console.log(`${index + 1}. ${filename}`);
+        console.log(`   FROM: assets/images/photos/${filename}`);
+        console.log(`   TO:   [PASTE YOUR IMGUR URL HERE]`);
+        console.log('');
+      });
+
+      console.log('📝 INSTRUCTIONS:');
+      console.log('1. Upload each image to Imgur');
+      console.log('2. Copy the direct image URL');
+      console.log('3. Replace the paths in the photos array above');
+      console.log('4. Commit and redeploy');
+      console.log('===============================');
+    };
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      // Render all photos
+      renderPhotos();
+
+      // Adjust container height
+      setTimeout(() => {
+        const container = document.getElementById('album-container');
+        if (container) {
+          const items = container.querySelectorAll('.photo-item');
+          if (items.length > 0) {
+            let maxBottom = 0;
+            items.forEach(item => {
+              const bottom = item.offsetTop + item.offsetHeight;
+              if (bottom > maxBottom) maxBottom = bottom;
+            });
+            container.style.height = `${maxBottom + 100}px`;
+          }
+        }
+      }, 2000);
+
+      // Show deployment help immediately
+      console.log('\n═══════════════════════════════════════════════');
+      console.log('🖼️  PHOTO ALBUM DIAGNOSTIC TOOLS');
+      console.log('═══════════════════════════════════════════════');
+      console.log('If images don\'t load, run these commands:');
+      console.log('');
+      console.log('1. Quick check: checkImages()');
+      console.log('2. Full diagnostic: diagnoseDeployment()');
+      console.log('');
+      console.log('These will tell you exactly what\'s wrong!');
+      console.log('═══════════════════════════════════════════════\n');
+
+      // Show deployment help for first-time users
+      setTimeout(() => {
+        const failedImages = document.querySelectorAll('img[style*="opacity: 0.6"]');
+        if (failedImages.length > 0) {
+          console.log('\n⚠️  IMAGE LOADING ISSUES DETECTED ⚠️');
+          console.log(`   ${failedImages.length} images failed to load`);
+          console.log('   This usually means the assets folder wasn\'t uploaded');
+          console.log('   Run: checkImages()');
+          console.log('   Or check: https://yoursite.com/assets/images/photos/');
+
+          // Show visual diagnostic panel
+          const panel = document.getElementById('diagnostic-panel');
+          if (panel) {
+            panel.classList.remove('hidden');
+          }
+        }
+      }, 3000);
+    });
+
+    // Responsive repositioning
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (window.innerWidth > 768) {
+          const container = document.getElementById('album-container');
+          if (container) {
+            const items = container.querySelectorAll('.photo-item');
+            const containerWidth = container.offsetWidth || 1200;
+
+            items.forEach((item, index) => {
+              const photo = photos[index];
+              if (photo) {
+                const baseX = (index * 280) % (containerWidth - 350);
+                const baseY = Math.floor((index * 280) / (containerWidth - 350)) * 320;
+                const randomX = (Math.random() - 0.5) * 100;
+                const randomY = (Math.random() - 0.5) * 80;
+
+                item.style.left = `${Math.max(20, baseX + randomX)}px`;
+                item.style.top = `${Math.max(20, baseY + randomY)}px`;
+                item.style.transform = `rotate(${photo.rotation}deg)`;
+              }
+            });
+          }
+        }
+      }, 250);
+    });
+  </script>
+</body>
+</html>

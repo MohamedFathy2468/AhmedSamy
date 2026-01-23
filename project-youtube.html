@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Channel Project - Ahmed Samy</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#6366f1',
+                            dark: '#4f46e5',
+                            accent: '#ec4899'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- Core Visuals --- */
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Animated Background Blobs */
+        .blob-cont {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #a78bfa; }
+        .blob-2 { bottom: -10%; right: -10%; width: 50vw; height: 50vw; background: #f472b6; animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: #38bdf8; animation-delay: -10s; }
+
+        body.dark .blob-1 { background: #4c1d95; opacity: 0.2; }
+        body.dark .blob-2 { background: #831843; opacity: 0.2; }
+        body.dark .blob-3 { background: #0c4a6e; opacity: 0.2; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, -50px) scale(1.1); }
+        }
+
+        /* Modern Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        body.dark .glass {
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Typography & Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.dark .text-gradient {
+            background: linear-gradient(135deg, #818cf8 0%, #f472b6 100%);
+        }
+
+        /* Smooth Loader */
+        .fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0b0f19] dark:text-slate-100 min-h-screen">
+
+    <div class="blob-cont">
+        <div class="blob blob-1 rounded-full"></div>
+        <div class="blob blob-2 rounded-full"></div>
+        <div class="blob blob-3 rounded-full"></div>
+    </div>
+
+    <nav class="fixed top-0 left-0 w-full z-50 px-4 py-4">
+        <div class="glass max-w-7xl mx-auto rounded-full px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="font-display font-bold text-xl tracking-tight hover:opacity-80 transition">
+                Ahmed<span class="text-red-500">.Media</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="px-5 py-2 rounded-full text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition flex items-center gap-2">
+                    <i class="fas fa-arrow-left text-xs"></i> Back
+                </a>
+                <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-red-500 hover:text-white transition">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:inline"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-40 pb-20 px-4 md:px-8">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider mb-6 fade-up">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                Educational Content
+            </div>
+            
+            <h1 class="font-display text-6xl md:text-8xl font-bold mb-8 leading-tight fade-up" style="animation-delay: 0.1s;">
+                YouTube Channel <br>
+                <span class="text-gradient">& Learning Impact</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed fade-up" style="animation-delay: 0.2s;">
+                An educational content creation project featuring engaging video essays on science, history, and global topics. Built from scratch to over 7,000 views with strong audience engagement across North Africa and the Middle East.
+            </p>
+
+            <!-- Hero Image -->
+            <div class="w-full aspect-video rounded-2xl mb-12 fade-up overflow-hidden shadow-2xl" style="animation-delay: 0.3s;">
+                <img src="assets/images/channels4banner.jpg" alt="YouTube Channel Banner" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-10 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass glass-card p-8 rounded-3xl relative overflow-hidden fade-up">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-500/10 rounded-full blur-xl"></div>
+                <div class="text-4xl font-display font-bold text-red-600 dark:text-red-400 mb-2">7,056</div>
+                <p class="font-medium text-slate-500 dark:text-slate-400">Total Channel Views</p>
+            </div>
+            <div class="glass glass-card p-8 rounded-3xl relative overflow-hidden fade-up" style="animation-delay: 0.1s;">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/10 rounded-full blur-xl"></div>
+                <div class="text-4xl font-display font-bold text-orange-600 dark:text-orange-400 mb-2">284.1</div>
+                <p class="font-medium text-slate-500 dark:text-slate-400">Hours Watch Time</p>
+            </div>
+            <div class="glass glass-card p-8 rounded-3xl relative overflow-hidden fade-up" style="animation-delay: 0.2s;">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-pink-500/10 rounded-full blur-xl"></div>
+                <div class="text-4xl font-display font-bold text-pink-600 dark:text-pink-400 mb-2">109</div>
+                <p class="font-medium text-slate-500 dark:text-slate-400">Top Video Hours</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Overview Section -->
+    <section class="py-20 px-4 md:px-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 fade-up">Project Overview</h2>
+                <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto fade-up" style="animation-delay: 0.1s;">Learn about the strategy, tools, and achievements behind this educational content platform.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Left Column -->
+                <div>
+                    <p class="text-slate-700 dark:text-slate-300 mb-4 fade-up leading-relaxed" style="animation-delay: 0.2s;">
+                        This project involved creating and managing a YouTube channel focused on producing high-quality educational video essays. Starting from zero, I built a growing community of learners interested in science, history, and global affairs. The channel has achieved 7,056 total views and 284.1 hours of cumulative watch time, demonstrating strong audience retention and engagement.
+                    </p>
+                    <p class="text-slate-700 dark:text-slate-300 mb-8 fade-up leading-relaxed" style="animation-delay: 0.25s;">
+                        Through data-driven content strategy and consistent audience engagement, I developed expertise in content planning, video production, audience analysis, and community management. The project demonstrates the ability to create compelling educational narratives that resonate across diverse geographic audiences.
+                    </p>
+
+                    <h3 class="text-2xl font-bold mb-6 mt-8 fade-up" style="animation-delay: 0.3s;">Performance Highlights</h3>
+                    <ul class="space-y-3 fade-up" style="animation-delay: 0.35s;">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1 flex-shrink-0"></i>
+                            <span class="text-slate-700 dark:text-slate-300"><strong>7,056 Total Views</strong> with strong organic reach across multiple markets</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1 flex-shrink-0"></i>
+                            <span class="text-slate-700 dark:text-slate-300"><strong>284.1 Hours Watch Time</strong> demonstrating high audience retention</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1 flex-shrink-0"></i>
+                            <span class="text-slate-700 dark:text-slate-300"><strong>Top Video: 109 hours</strong> - "Climate Change: What If Global Warming Disappeared?"</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1 flex-shrink-0"></i>
+                            <span class="text-slate-700 dark:text-slate-300"><strong>46.7% MENA Reach</strong> from Egypt, Algeria, Morocco, and Saudi Arabia</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-3 mt-1 flex-shrink-0"></i>
+                            <span class="text-slate-700 dark:text-slate-300">100% positive community engagement with supportive feedback</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 fade-up" style="animation-delay: 0.2s;">Technologies & Tools</h3>
+                    <div class="space-y-4 fade-up" style="animation-delay: 0.25s;">
+                        <div class="glass p-5 rounded-lg hover:shadow-lg transition">
+                            <h4 class="font-semibold mb-2 flex items-center">
+                                <i class="fas fa-clapperboard text-red-500 mr-3"></i>
+                                Production Tools
+                            </h4>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">OBS Studio, Adobe Premiere Pro, Final Cut Pro</p>
+                        </div>
+                        <div class="glass p-5 rounded-lg hover:shadow-lg transition">
+                            <h4 class="font-semibold mb-2 flex items-center">
+                                <i class="fas fa-image text-orange-500 mr-3"></i>
+                                Design & Graphics
+                            </h4>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">Photoshop, Figma, Canva, After Effects</p>
+                        </div>
+                        <div class="glass p-5 rounded-lg hover:shadow-lg transition">
+                            <h4 class="font-semibold mb-2 flex items-center">
+                                <i class="fas fa-chart-bar text-pink-500 mr-3"></i>
+                                Analytics
+                            </h4>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">YouTube Analytics, TubeBuddy, VidIQ</p>
+                        </div>
+                        <div class="glass p-5 rounded-lg hover:shadow-lg transition">
+                            <h4 class="font-semibold mb-2 flex items-center">
+                                <i class="fas fa-volume-up text-red-500 mr-3"></i>
+                                Audio Production
+                            </h4>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">Audacity, Adobe Audition, DaVinci Resolve</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Content Section -->
+    <section class="py-20 px-4 md:px-8 bg-slate-50/50 dark:bg-slate-900/20">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 fade-up">Top Performing Content</h2>
+                <p class="text-lg text-slate-600 dark:text-slate-400 fade-up" style="animation-delay: 0.1s;">Most-watched videos and their impact on audience engagement</p>
+            </div>
+
+            <div class="space-y-6 fade-up" style="animation-delay: 0.15s;">
+                <div class="glass p-6 rounded-xl hover:shadow-lg transition border-l-4 border-red-500">
+                    <h3 class="text-xl font-semibold mb-3">Climate Change: What If Global Warming Disappeared?</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">A thought-provoking exploration of climate science and environmental consequences that became the channel's most-watched video.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-gradient">109 hours</span>
+                        <span class="text-sm text-slate-500">Watch Time</span>
+                    </div>
+                </div>
+                
+                <div class="glass p-6 rounded-xl hover:shadow-lg transition border-l-4 border-orange-500">
+                    <h3 class="text-xl font-semibold mb-3">Albert Einstein: The Mind That Changed the World</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">A biographical deep-dive into one of history's greatest scientific minds, showcasing the appeal of educational storytelling.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-gradient">71.4 hours</span>
+                        <span class="text-sm text-slate-500">Watch Time</span>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-xl hover:shadow-lg transition border-l-4 border-pink-500">
+                    <h3 class="text-xl font-semibold mb-3">Additional Notable Videos</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Combined watch time of 53.8 hours across multiple videos, indicating diverse audience interests in science, history, and educational content.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-gradient">53.8 hours</span>
+                        <span class="text-sm text-slate-500">Collective Watch Time</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Audience Geography Section -->
+    <section class="py-20 px-4 md:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 fade-up">Audience & Geographic Reach</h2>
+                <p class="text-lg text-slate-600 dark:text-slate-400 fade-up" style="animation-delay: 0.1s;">Strong presence across North Africa and the Middle East</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="fade-up" style="animation-delay: 0.15s;">
+                    <p class="text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
+                        The channel has built a strong presence across North Africa and the Middle East, with Egypt alone accounting for 13.8% of viewership. This geographic concentration demonstrates cultural relevance and resonance with Arabic-speaking audiences interested in educational content.
+                    </p>
+                    <h4 class="text-lg font-semibold mb-6">Top 7 Countries by Viewership:</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇪🇬 Egypt</span>
+                            <span class="font-bold text-gradient">13.8%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇩🇿 Algeria</span>
+                            <span class="font-bold text-gradient">7.8%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇲🇦 Morocco</span>
+                            <span class="font-bold text-gradient">7.3%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇸🇦 Saudi Arabia</span>
+                            <span class="font-bold text-gradient">7.3%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇮🇶 Iraq</span>
+                            <span class="font-bold text-gradient">7.2%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇹🇳 Tunisia</span>
+                            <span class="font-bold text-gradient">0.9%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-700 dark:text-slate-300">🇯🇴 Jordan</span>
+                            <span class="font-bold text-gradient">0.6%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-xl fade-up" style="animation-delay: 0.2s;">
+                    <h4 class="text-lg font-semibold mb-6">Audience Insights</h4>
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-sm text-slate-500 mb-3">MENA Region Focus</p>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                                <div class="bg-gradient-to-r from-red-500 to-pink-500 h-3 rounded-full" style="width: 46.7%"></div>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">46.7% from North Africa & Middle East</p>
+                        </div>
+                        <div class="pt-4">
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Key Demographics:</p>
+                            <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                                <li>✓ Primary audience: Arabic-speaking learners</li>
+                                <li>✓ Content interests: Science, history, global affairs</li>
+                                <li>✓ Engagement: Strong retention with supportive community</li>
+                                <li>✓ Growth potential: Underrepresented Western markets</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Engagement Section -->
+    <section class="py-20 px-4 md:px-8 bg-slate-50/50 dark:bg-slate-900/20">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 fade-up">Community Engagement & Impact</h2>
+                <p class="text-lg text-slate-600 dark:text-slate-400 fade-up" style="animation-delay: 0.1s;">Building meaningful connections with a supportive audience</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="fade-up" style="animation-delay: 0.15s;">
+                    <p class="text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
+                        The YouTube community consistently demonstrates positive engagement and appreciation for the educational content. Comments reflect genuine interest in the topics covered and encouragement for continued creation.
+                    </p>
+                    <h4 class="text-lg font-semibold mb-6">Community Sentiment:</h4>
+                    <div class="space-y-4">
+                        <div class="glass p-4 rounded-lg">
+                            <p class="text-slate-700 dark:text-slate-300 italic text-sm">"الله يوفقك و يسعدك يارب"</p>
+                            <p class="text-xs text-slate-500 mt-2">May God grant you success and happiness</p>
+                        </div>
+                        <div class="glass p-4 rounded-lg">
+                            <p class="text-slate-700 dark:text-slate-300 italic text-sm">"محتوى جميل"</p>
+                            <p class="text-xs text-slate-500 mt-2">Beautiful content</p>
+                        </div>
+                        <div class="glass p-4 rounded-lg">
+                            <p class="text-slate-700 dark:text-slate-300 italic text-sm">"مبدع"</p>
+                            <p class="text-xs text-slate-500 mt-2">Creative</p>
+                        </div>
+                        <div class="glass p-4 rounded-lg">
+                            <p class="text-slate-700 dark:text-slate-300 italic text-sm">"بالتوفيق يا رب"</p>
+                            <p class="text-xs text-slate-500 mt-2">Best of luck</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-xl fade-up" style="animation-delay: 0.2s;">
+                    <h4 class="text-lg font-semibold mb-6">Engagement Metrics</h4>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">Comment Sentiment</span>
+                                <span class="font-bold text-gradient">100% Positive</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">All community feedback is supportive and encouraging</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">Avg Watch Duration</span>
+                                <span class="font-bold text-gradient">High Retention</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">284.1 hours total watch time indicates strong audience engagement</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">Community Type</span>
+                                <span class="font-bold text-gradient">Supportive & Engaged</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Interactive audience providing constructive feedback and encouragement</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                            <p class="text-sm text-slate-600 dark:text-slate-400">💡 Community engagement demonstrates the value and relevance of the educational content created</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-20 px-4 md:px-8">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-6 fade-up">Interested in Collaborating?</h2>
+            <p class="text-xl text-slate-600 dark:text-slate-400 mb-12 fade-up max-w-2xl mx-auto" style="animation-delay: 0.1s;">
+                If you'd like to discuss content creation, collaboration opportunities, or have any questions about this project, feel free to reach out.
+            </p>
+            <div class="flex gap-4 justify-center fade-up flex-wrap" style="animation-delay: 0.2s;">
+                <a href="index.html#contact" class="glass px-8 py-4 rounded-full hover:bg-white/30 transition-all duration-300 font-semibold cursor-pointer">
+                    Get In Touch
+                </a>
+                <a href="index.html" class="glass px-8 py-4 rounded-full hover:bg-white/30 transition-all duration-300 font-semibold cursor-pointer border-2 border-slate-200 dark:border-slate-700">
+                    Back to Portfolio
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 md:px-8 border-t border-slate-200 dark:border-slate-700">
+        <div class="max-w-7xl mx-auto text-center text-slate-600 dark:text-slate-400">
+            <p>&copy; 2026 Ahmed Samy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Check local storage or preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // Trigger fade-up animations
+        window.addEventListener('load', () => {
+            const fadeElements = document.querySelectorAll('.fade-up');
+            fadeElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.05}s`;
+            });
+        });
+    </script>
+</body>
+</html>
