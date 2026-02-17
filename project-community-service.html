@@ -4,7 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Community Service — Ahmed Samy</title>
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon-white.svg?v=3" id="faviconSvg">
+  <link rel="shortcut icon" href="assets/icons/favicon-white.svg?v=3" id="faviconShortcut">
+  <link rel="apple-touch-icon" href="assets/icons/favicon-black.svg?v=3">
+  <script>
+    (function(){
+      var t=localStorage.getItem('yt-theme');
+      var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if(t==='light'||(!t&&!d)) document.documentElement.classList.add('light');
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -1227,14 +1236,23 @@
     /* ── THEME TOGGLE ── */
     const html = document.documentElement;
     const toggleBtn = document.getElementById('theme-toggle');
-
-    const saved = localStorage.getItem('yt-theme');
-    if (saved === 'light') html.classList.add('light');
-
-    toggleBtn.addEventListener('click', () => {
-      html.classList.toggle('light');
-      localStorage.setItem('yt-theme', html.classList.contains('light') ? 'light' : 'dark');
-    });
+    const faviconSvg = document.getElementById('faviconSvg');
+    const faviconShortcut = document.getElementById('faviconShortcut');
+    function syncFavicon(){
+      const icon = html.classList.contains('light')
+        ? 'assets/icons/favicon-black.svg?v=3'
+        : 'assets/icons/favicon-white.svg?v=3';
+      if (faviconSvg) faviconSvg.href = icon;
+      if (faviconShortcut) faviconShortcut.href = icon;
+    }
+    syncFavicon();
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        html.classList.toggle('light');
+        localStorage.setItem('yt-theme', html.classList.contains('light') ? 'light' : 'dark');
+        syncFavicon();
+      });
+    }
 
     /* ── SCROLL REVEAL ── */
     const revealEls = document.querySelectorAll('.reveal');

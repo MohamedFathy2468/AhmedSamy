@@ -4,7 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Photo Album – Memories</title>
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon-white.svg?v=3" id="faviconSvg">
+  <link rel="shortcut icon" href="assets/icons/favicon-white.svg?v=3" id="faviconShortcut">
+  <link rel="apple-touch-icon" href="assets/icons/favicon-black.svg?v=3">
+  <script>
+    (function(){
+      var t=localStorage.getItem('yt-theme');
+      var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if(t==='light'||(!t&&!d)) document.documentElement.classList.add('light');
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -483,6 +492,18 @@
 
   <script>
     /* ── PHOTO DATA ── */
+    const html = document.documentElement;
+    const faviconSvg = document.getElementById('faviconSvg');
+    const faviconShortcut = document.getElementById('faviconShortcut');
+    function syncFavicon() {
+      const icon = html.classList.contains('light')
+        ? 'assets/icons/favicon-black.svg?v=3'
+        : 'assets/icons/favicon-white.svg?v=3';
+      if (faviconSvg) faviconSvg.href = icon;
+      if (faviconShortcut) faviconShortcut.href = icon;
+    }
+    syncFavicon();
+
     const photoFiles = [
       'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.42 AM (1).jpeg',
       'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.42 AM (2).jpeg',
