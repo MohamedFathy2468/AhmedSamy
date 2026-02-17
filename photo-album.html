@@ -3,828 +3,678 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Photo Album — Memories</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Photo Album – Memories</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --cream:       #f4ede0;
+      --parchment:   #ede3d1;
+      --sepia-light: #c9a97a;
+      --sepia:       #9b6f3e;
+      --sepia-dark:  #6b4423;
+      --ink:         #2d1f0e;
+      --shadow-warm: rgba(90, 50, 15, 0.18);
+      --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f1e8;
-      background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px),
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px),
-        radial-gradient(ellipse at 20% 30%, rgba(139, 90, 60, 0.03) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(166, 138, 111, 0.02) 0%, transparent 50%);
+      font-family: 'DM Mono', monospace;
+      background-color: var(--cream);
+      background-image:
+        var(--grain-url),
+        radial-gradient(ellipse 70% 55% at 15% 20%, rgba(193,155,103,0.13) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(155,111,62,0.10) 0%, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(0,0,0,.025) 38px, rgba(0,0,0,.025) 39px),
+        repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(0,0,0,.018) 38px, rgba(0,0,0,.018) 39px);
       min-height: 100vh;
-      padding-bottom: 60px;
+      color: var(--ink);
     }
 
-    /* Header */
+    /* ─── HEADER ─── */
     header {
-      padding: 40px 20px 40px;
-      background: linear-gradient(180deg, rgba(245, 241, 232, 0.98) 0%, rgba(245, 241, 232, 0.95) 50%, rgba(245, 241, 232, 0) 100%);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(139, 90, 60, 0.08);
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
       position: relative;
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: rgba(139, 90, 60, 0.1);
-      border: 1px solid rgba(139, 90, 60, 0.2);
-      border-radius: 20px;
-      color: #8b5a3c;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .back-button:hover {
-      background: rgba(139, 90, 60, 0.15);
-      border-color: rgba(139, 90, 60, 0.3);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
-    }
-
-    .back-button svg {
-      transition: transform 0.3s ease;
-    }
-
-    .back-button:hover svg {
-      transform: translateX(-2px);
-    }
-
-    .header-text {
-      flex: 1;
+      padding: 52px 40px 44px;
       text-align: center;
+      overflow: hidden;
     }
 
     header::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #d4a574, transparent);
-      opacity: 0.6;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(237,227,209,0.98) 0%, rgba(244,237,224,0.92) 70%, rgba(244,237,224,0) 100%);
+      pointer-events: none;
     }
 
-
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 600;
-      color: #8b5a3c;
-      margin-bottom: 8px;
-      letter-spacing: -0.02em;
-      position: relative;
-      text-shadow: 0 1px 2px rgba(139, 90, 60, 0.1);
-    }
-
-    header h1::after {
-      content: '';
+    /* corner flourishes */
+    header::after {
+      content: '✦';
       position: absolute;
-      bottom: -12px;
+      font-size: 22px;
+      color: var(--sepia-light);
+      opacity: 0.5;
+      top: 24px;
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, #d4a574, #b8956a, #d4a574);
-      border-radius: 1px;
-      opacity: 0.8;
+      letter-spacing: 28px;
     }
 
-    header p {
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      color: #a68a6f;
-      font-weight: 300;
-      font-style: italic;
-      opacity: 0.85;
+    .header-inner {
       position: relative;
-      margin-top: 16px;
-    }
-
-    /* Album Section */
-    .album-section {
-      max-width: 1400px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 40px 20px;
-      position: relative;
     }
 
-    /* Album Layout */
-    .album-container {
-      position: relative;
-      min-height: 400px;
-    }
-
-    .photo-item {
+    .back-btn {
       position: absolute;
-      cursor: pointer;
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      opacity: 0;
-      transform: translateY(60px) scale(0.92) rotate(0deg);
-      will-change: transform, opacity;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15)) 
-              drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
-    }
-
-    .photo-item.visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    .photo-item:hover {
-      transform: scale(1.08) translateY(-8px) !important;
-      z-index: 50 !important;
-      filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.25)) 
-              drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    /* Polaroid-style frame */
-    .photo-frame {
-      background: linear-gradient(135deg, #fefefe 0%, #fafafa 100%);
-      padding: 15px 15px 50px;
-      box-shadow: 
-        0 1px 2px rgba(0, 0, 0, 0.06),
-        0 3px 8px rgba(0, 0, 0, 0.08),
-        0 8px 20px rgba(0, 0, 0, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.03);
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 18px 7px 12px;
+      border: 1px solid rgba(155,111,62,0.30);
       border-radius: 2px;
-      position: relative;
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      background: rgba(255,255,255,0.45);
+      color: var(--sepia-dark);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
+      backdrop-filter: blur(6px);
     }
 
-    .photo-frame::before {
+    .back-btn:hover {
+      background: rgba(255,255,255,0.7);
+      border-color: rgba(155,111,62,0.55);
+      transform: translateY(calc(-50% - 1px));
+    }
+
+    .back-btn svg { flex-shrink: 0; transition: transform 0.25s; }
+    .back-btn:hover svg { transform: translateX(-3px); }
+
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--sepia-light);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      line-height: 0.95;
+      color: var(--sepia-dark);
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--sepia);
+    }
+
+    .header-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .header-rule::before,
+    .header-rule::after {
+      content: '';
+      flex: 1;
+      max-width: 120px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--sepia-light), transparent);
+      opacity: 0.5;
+    }
+
+    .header-rule span {
+      color: var(--sepia-light);
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+      color: var(--sepia);
+      opacity: 0.75;
+    }
+
+    /* ─── PHOTO COUNT BADGE ─── */
+    .photo-count {
+      display: inline-block;
+      margin-top: 22px;
+      padding: 5px 16px;
+      border: 1px solid rgba(155,111,62,0.22);
+      border-radius: 40px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sepia);
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* ─── GALLERY GRID ─── */
+    .gallery-section {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* Masonry layout using CSS columns */
+    .masonry {
+      columns: 5 220px;
+      column-gap: 18px;
+    }
+
+    @media (max-width: 1100px) { .masonry { columns: 4 200px; } }
+    @media (max-width: 820px)  { .masonry { columns: 3 160px; } }
+    @media (max-width: 560px)  { .masonry { columns: 2 140px; } }
+
+    .photo-card {
+      break-inside: avoid;
+      margin-bottom: 18px;
+      cursor: pointer;
+      position: relative;
+      border-radius: 3px;
+      overflow: hidden;
+      /* polaroid-style shadow */
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.06),
+        0 4px 12px var(--shadow-warm),
+        0 0 0 6px rgba(255,255,255,0.72),
+        0 0 0 7px rgba(201,169,122,0.15);
+      transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.38s ease;
+      will-change: transform;
+      /* slight tilt variations set via inline style */
+    }
+
+    .photo-card:hover {
+      transform: translateY(-8px) rotate(0deg) scale(1.03) !important;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.08),
+        0 16px 40px var(--shadow-warm),
+        0 0 0 6px rgba(255,255,255,0.85),
+        0 0 0 7px rgba(201,169,122,0.25);
+      z-index: 10;
+    }
+
+    .photo-card::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(0, 0, 0, 0.02) 100%);
+      background: linear-gradient(
+        160deg,
+        rgba(255,255,255,0.12) 0%,
+        rgba(255,255,255,0) 55%,
+        rgba(90,50,15,0.06) 100%
+      );
       pointer-events: none;
-      border-radius: 2px;
+      transition: opacity 0.3s;
     }
 
-    .photo-frame::after {
-      content: '';
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 32px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #ddd 20%, #ddd 80%, transparent);
-      border-radius: 1px;
-      opacity: 0.6;
-    }
+    .photo-card:hover::after { opacity: 0; }
 
-    .photo-img {
+    .photo-card img {
+      display: block;
       width: 100%;
       height: auto;
-      display: block;
-      border-radius: 1px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      position: relative;
+      border-radius: 2px;
+      filter: sepia(8%) contrast(1.02) brightness(0.99);
+      transition: filter 0.4s ease;
     }
 
-
-    /* Image size variations */
-    .photo-item.size-small {
-      width: 180px;
+    .photo-card:hover img {
+      filter: sepia(0%) contrast(1.05) brightness(1.02);
     }
 
-    .photo-item.size-medium {
-      width: 240px;
+    /* Bottom polaroid tag */
+    .photo-card .tag {
+      background: #fff;
+      padding: 8px 10px 10px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--sepia-light);
+      border-top: 1px solid rgba(201,169,122,0.15);
     }
 
-    .photo-item.size-large {
-      width: 300px;
-    }
-
-    .photo-item.size-portrait {
-      width: 200px;
-    }
-
-    /* Lightbox */
-    .lightbox {
+    /* ─── LIGHTBOX ─── */
+    .lb {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.94);
-      backdrop-filter: blur(12px);
+      inset: 0;
+      z-index: 2000;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
       opacity: 0;
-      visibility: hidden;
-      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      transition: opacity 0.35s ease;
     }
 
-    .lightbox.active {
-      opacity: 1;
-      visibility: visible;
-    }
+    .lb.active { opacity: 1; pointer-events: all; }
 
-    .lightbox-content {
-      max-width: 95vw;
-      max-height: 95vh;
-      position: relative;
-      transform: scale(0.88) translateY(20px);
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .lightbox.active .lightbox-content {
-      transform: scale(1) translateY(0);
-    }
-
-    .lightbox-img {
-      max-width: 100%;
-      max-height: 95vh;
-      object-fit: contain;
-      border-radius: 4px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    }
-
-    .lightbox-close {
+    .lb-backdrop {
       position: absolute;
-      top: -50px;
+      inset: 0;
+      background: rgba(20,12,4,0.92);
+      backdrop-filter: blur(16px) saturate(0.7);
+    }
+
+    .lb-body {
+      position: relative;
+      z-index: 1;
+      max-width: min(90vw, 900px);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: scale(0.9) translateY(24px);
+      transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .lb.active .lb-body { transform: scale(1) translateY(0); }
+
+    /* polaroid wrap in lightbox */
+    .lb-frame {
+      background: #fff;
+      padding: 14px 14px 52px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+      border-radius: 2px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lb-img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(85vh - 80px);
+      object-fit: contain;
+      border-radius: 1px;
+    }
+
+    .lb-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--sepia-light);
+      margin-top: 10px;
+      letter-spacing: 0.06em;
+    }
+
+    .lb-close {
+      position: absolute;
+      top: -46px;
       right: 0;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1.5px solid rgba(255, 255, 255, 0.25);
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 26px;
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      font-weight: 300;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.3s;
       line-height: 1;
     }
 
-    .lightbox-close:hover {
-      background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.45);
-      transform: scale(1.12) rotate(90deg);
-      color: white;
+    .lb-close:hover { background: rgba(255,255,255,0.18); transform: rotate(90deg) scale(1.1); }
+
+    /* nav arrows */
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(20,12,4,0.5);
+      color: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.25s, border-color 0.25s;
+      z-index: 2;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .photo-item {
-        position: relative !important;
-        width: 100% !important;
-        max-width: 280px;
-        margin: 0 auto 30px !important;
-        transform: none !important;
-      }
+    .lb-nav:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
+    .lb-prev { left: -58px; }
+    .lb-next { right: -58px; }
 
-      .photo-item.visible {
-        transform: none !important;
-      }
-
-      .photo-item:hover {
-        transform: scale(1.02) translateY(-3px) !important;
-      }
-
-      .album-container {
-        min-height: auto;
-      }
-
-      header {
-        padding: 30px 15px 25px;
-      }
-
-      .header-content {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-      }
-
-      .back-button {
-        align-self: flex-start;
-        padding: 6px 12px;
-        font-size: 13px;
-      }
-
-      .header-text {
-        text-align: center;
-        width: 100%;
-      }
-
-      header h1 {
-        font-size: clamp(1.8rem, 6vw, 2.5rem);
-        margin-bottom: 6px;
-        letter-spacing: -0.01em;
-      }
-
-      header p {
-        font-size: clamp(0.85rem, 4vw, 1rem);
-        opacity: 0.75;
-      }
-
-      .lightbox-close {
-        top: 10px;
-        right: 10px;
-      }
+    @media (max-width: 700px) {
+      .lb-prev { left: 8px; }
+      .lb-next { right: 8px; }
+      .lb-frame { padding: 10px 10px 40px; }
     }
 
-    /* Smooth scrolling */
-    html {
-      scroll-behavior: smooth;
+    /* ─── FOOTER STRIP ─── */
+    .footer-strip {
+      text-align: center;
+      padding: 20px 20px 40px;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--sepia-light);
+      opacity: 0.5;
     }
 
-    /* Loading placeholder */
-    .photo-img[loading="lazy"] {
-      background: linear-gradient(110deg, #e8e3d8 8%, #f0ebe0 18%, #e8e3d8 33%);
-      background-size: 200% 100%;
-      animation: loading 2s ease-in-out infinite;
+    /* ─── SCROLL REVEAL ANIMATION ─── */
+    .photo-card {
+      opacity: 0;
+      transition:
+        opacity 0.55s ease,
+        transform 0.55s cubic-bezier(0.34,1.56,0.64,1),
+        box-shadow 0.38s ease;
     }
 
-    @keyframes loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+    .photo-card.revealed {
+      opacity: 1;
     }
+
+    /* ─── DIAGNOSTICS (hidden by default) ─── */
+    #diag-panel {
+      display: none;
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 16px;
+      max-width: 320px;
+      z-index: 3000;
+      font-size: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    #diag-panel.show { display: block; }
+    #diag-panel h3 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #856404; }
+    #diag-panel p { color: #664d03; line-height: 1.5; margin-bottom: 10px; }
+    #diag-panel .diag-close { float: right; cursor: pointer; color: #856404; font-size: 16px; margin-top: -4px; }
   </style>
 </head>
 <body>
-  <!-- Header -->
+
+  <!-- ── HEADER ── -->
   <header>
-    <div class="header-content">
-      <a href="index.html" class="back-button" title="Back to Portfolio">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="header-inner">
+      <a href="index.html" class="back-btn" title="Back to Portfolio">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
         Back
       </a>
-      <div class="header-text">
-        <h1>Photo Album</h1>
-        <p>A collection of memories, moments, and milestones</p>
-      </div>
+
+      <p class="eyebrow">A personal collection</p>
+      <h1>Photo <em>Album</em></h1>
+
+      <div class="header-rule"><span>✦</span></div>
+      <p class="subtitle">Memories, moments &amp; milestones</p>
+
+      <span class="photo-count" id="photo-count">— photos</span>
     </div>
   </header>
 
-  <!-- Photo Album -->
-  <section class="album-section">
-    <div class="album-container" id="album-container"></div>
-
-    <!-- Diagnostic Panel (shows if there are issues) -->
-    <div id="diagnostic-panel" class="hidden fixed top-4 right-4 bg-red-100 border border-red-300 rounded-lg p-4 shadow-lg max-w-sm z-50">
-      <h3 class="text-red-800 font-bold mb-2">⚠️ Image Loading Issues</h3>
-      <p class="text-red-700 text-sm mb-3">Some images failed to load. This usually means the assets folder wasn't uploaded to your server.</p>
-      <div class="space-y-2">
-        <button onclick="checkImages()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-          Quick Check
-        </button>
-        <button onclick="diagnoseDeployment()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm ml-2">
-          Full Diagnostic
-        </button>
-      </div>
-      <button onclick="document.getElementById('diagnostic-panel').classList.add('hidden')" class="text-red-600 hover:text-red-800 text-sm mt-2">
-        Close
-      </button>
-    </div>
+  <!-- ── GALLERY ── -->
+  <section class="gallery-section">
+    <div class="masonry" id="masonry"></div>
   </section>
 
-  <!-- Lightbox -->
-  <div id="lightbox" class="lightbox">
-    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-    <div class="lightbox-content">
-      <img id="lightbox-img" src="" alt="" class="lightbox-img" />
+  <!-- ── FOOTER ── -->
+  <div class="footer-strip">— end of album —</div>
+
+  <!-- ── LIGHTBOX ── -->
+  <div class="lb" id="lb" role="dialog" aria-modal="true">
+    <div class="lb-backdrop" id="lb-backdrop"></div>
+    <div class="lb-body">
+      <button class="lb-close" id="lb-close" aria-label="Close">&times;</button>
+      <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button class="lb-nav lb-next" id="lb-next" aria-label="Next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+      <div class="lb-frame">
+        <img class="lb-img" id="lb-img" src="" alt="" />
+        <p class="lb-caption" id="lb-caption">memory</p>
+      </div>
     </div>
   </div>
 
-    <script>
-    // ===========================================
-    // 🚨 DEPLOYMENT FIX: Image Loading Issues
-    // ===========================================
-    // If images show 404 errors, the issue is:
-    // 1. assets/images/photos/ folder NOT uploaded to server
-    // 2. Wrong folder structure on server
-    // 3. Case sensitivity (assets vs Assets)
-    // 4. File permissions (644 for files, 755 for folders)
-    //
-    // QUICK FIX: Upload assets/ folder to your server root
-    // ===========================================
+  <!-- ── DIAGNOSTIC ── -->
+  <div id="diag-panel">
+    <span class="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">&times;</span>
+    <h3>⚠ Image Loading Issues</h3>
+    <p>Some images couldn't load. Make sure your <code>assets/images/photos/</code> folder is uploaded to your server.</p>
+    <p>Open the browser console and run <code>checkImages()</code> for a diagnosis.</p>
+  </div>
 
-    // IMMEDIATE DIAGNOSTIC - Run this right away in console!
-    window.checkImages = function() {
-      console.clear();
-      console.log('🔍 IMMEDIATE IMAGE CHECK...\n');
-
-      const testImg = 'whatsapp-image-2026-01-11-at-83445-pm.jpeg';
-      const img = new Image();
-
-      img.onload = function() {
-        console.log('✅✅✅ SUCCESS! Images are accessible ✅✅✅');
-        console.log('   Path: assets/images/photos/');
-        console.log('   Your photo album should work now!');
-      };
-
-      img.onerror = function() {
-        console.log('❌❌❌ IMAGES NOT FOUND ❌❌❌');
-        console.log('   Sevalla deployment filtered out assets folder');
-        console.log('\n🔧 SOLUTIONS:');
-        console.log('   1. Use external hosting (recommended):');
-        console.log('      - Upload to Imgur/Cloudinary');
-        console.log('      - Run: setupExternalHosting()');
-        console.log('   2. Contact Sevalla support');
-        console.log('   3. Use different deployment method');
-        console.log('\n   Test URL: ' + window.location.origin + '/assets/images/photos/' + testImg);
-      };
-
-      img.src = window.location.origin + '/assets/images/photos/' + testImg;
-    };
-
-    // EXTERNAL HOSTING SETUP - Use this if Sevalla filters assets
-    window.setupExternalHosting = function() {
-      console.log('🖼️ EXTERNAL IMAGE HOSTING SETUP');
-      console.log('================================');
-      console.log('Since Sevalla filters assets during build, use external hosting:');
-      console.log('');
-      console.log('1. 📸 Upload all 33 photos to Imgur album:');
-      console.log('   - Go to imgur.com');
-      console.log('   - Create new album');
-      console.log('   - Upload all photos from assets/images/photos/');
-      console.log('   - Copy album URL');
-      console.log('');
-      console.log('2. 🔗 Get direct image URLs:');
-      console.log('   - In album view, right-click each image');
-      console.log('   - Copy image address (direct link)');
-      console.log('');
-      console.log('3. 📝 Update photo-album.html:');
-      console.log('   - Replace local paths with Imgur URLs');
-      console.log('   - Run: convertToImgurUrls()');
-      console.log('');
-      console.log('4. 🚀 Redeploy:');
-      console.log('   - Commit changes');
-      console.log('   - Push to Git');
-      console.log('   - Sevalla will deploy (no large assets = success)');
-      console.log('================================');
-    };
-
-    // All photos in one collection
-    const photos = [
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83445-pm.jpeg', size: 'medium', rotation: -2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83532-pm.jpeg', size: 'large', rotation: 1.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83534-pm.jpeg', size: 'medium', rotation: 3 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83536-pm.jpeg', size: 'medium', rotation: -1.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83704-pm.jpeg', size: 'portrait', rotation: 2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83706-pm.jpeg', size: 'medium', rotation: -2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83707-pm.jpeg', size: 'large', rotation: 1 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83708-pm.jpeg', size: 'portrait', rotation: -3 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83712-pm.jpeg', size: 'medium', rotation: 2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83715-pm.jpeg', size: 'medium', rotation: -1.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83716-pm.jpeg', size: 'large', rotation: 2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83717-pm.jpeg', size: 'medium', rotation: -2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83719-pm.jpeg', size: 'portrait', rotation: 1.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83724-pm.jpeg', size: 'large', rotation: -2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83726-pm.jpeg', size: 'medium', rotation: 3 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83731-pm.jpeg', size: 'portrait', rotation: -1 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83732-pm.jpeg', size: 'small', rotation: 2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83734-pm.jpeg', size: 'medium', rotation: -3 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83736-pm.jpeg', size: 'portrait', rotation: 1 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83737-pm.jpeg', size: 'large', rotation: -2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83739-pm.jpeg', size: 'medium', rotation: 2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83743-pm.jpeg', size: 'large', rotation: 3 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83811-pm.jpeg', size: 'medium', rotation: -2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83933-pm.jpeg', size: 'large', rotation: 1.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83940-pm.jpeg', size: 'medium', rotation: -3 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83949-pm.jpeg', size: 'portrait', rotation: 2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83952-pm.jpeg', size: 'medium', rotation: 2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83953-pm.jpeg', size: 'small', rotation: -2 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-83954-pm.jpeg', size: 'portrait', rotation: 1 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84009-pm.jpeg', size: 'large', rotation: 1 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84022-pm.jpeg', size: 'large', rotation: -2.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84023-pm.jpeg', size: 'medium', rotation: 1.5 },
-      { src: 'assets/images/photos/whatsapp-image-2026-01-11-at-84027-pm-1.jpeg', size: 'large', rotation: -1.5 }
+  <script>
+    /* ── PHOTO DATA ── */
+    const photoFiles = [
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.42 AM (1).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.42 AM (2).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.42 AM (3).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.42 AM.jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (1).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (2).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (3).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (4).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (5).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (6).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (7).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM (8).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.43 AM.jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.44 AM (1).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.44 AM (2).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.44 AM (3).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.44 AM (4).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.44 AM.jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.46 AM (1).jpeg',
+      'assets/images/photos/WhatsApp Image 2026-02-17 at 8.51.46 AM.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83445-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83532-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83534-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83536-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83704-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83706-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83707-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83708-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83712-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83715-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83716-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83717-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83719-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83724-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83726-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83731-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83732-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83734-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83736-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83737-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83739-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83811-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-83954-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-84009-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-84022-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-84023-pm.jpeg',
+      'assets/images/photos/whatsapp-image-2026-01-11-at-84027-pm-1.jpeg'
     ];
 
-    // Size mapping
-    const sizeMap = {
-      small: 180,
-      medium: 240,
-      large: 300,
-      portrait: 200
-    };
-
-    // Create photo items with natural positioning
-    function createPhotoItem(photo, index, container) {
-      const item = document.createElement('div');
-      item.className = `photo-item size-${photo.size}`;
-      item.style.transform = `rotate(${photo.rotation}deg)`;
-      
-      // Natural random positioning
-      const containerWidth = container.offsetWidth || 1200;
-      const baseX = (index * 280) % (containerWidth - 350);
-      const baseY = Math.floor((index * 280) / (containerWidth - 350)) * 320;
-      const randomX = (Math.random() - 0.5) * 100;
-      const randomY = (Math.random() - 0.5) * 80;
-      
-      item.style.left = `${Math.max(20, baseX + randomX)}px`;
-      item.style.top = `${Math.max(20, baseY + randomY)}px`;
-
-      item.innerHTML = `
-        <div class="photo-frame">
-          <img src="${photo.src}"
-               alt="Photo"
-               class="photo-img"
-               loading="lazy"
-               onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\'%3E%3Crect fill=\\'%23e8e3d8\\' width=\\'300\\' height=\\'200\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'sans-serif\\' font-size=\\'14\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\'%3EPhoto%3C/text%3E%3C/svg%3E';" />
-        </div>
-      `;
-
-      item.addEventListener('click', () => openLightbox(photo.src, 'Photo'));
-      container.appendChild(item);
-
-      return item;
+    /* seeded pseudo-random for stable rotations across renders */
+    function seededRand(seed) {
+      let s = seed;
+      return function() {
+        s = (s * 1664525 + 1013904223) & 0xffffffff;
+        return (s >>> 0) / 4294967296;
+      };
     }
 
-    // Render all photos
-    function renderPhotos() {
-      const container = document.getElementById('album-container');
-      if (!container) return;
+    const rand = seededRand(42);
 
-      photos.forEach((photo, index) => {
-        setTimeout(() => {
-          const item = createPhotoItem(photo, index, container);
-          // Trigger animation with slight variation
-          setTimeout(() => item.classList.add('visible'), 30 + (index % 3) * 20);
-        }, index * 80);
+    const TILT_OPTIONS = [-3.2, -2.1, -1.3, -0.6, 0.5, 1.2, 2.2, 3.0];
+
+    /* ── RENDER MASONRY ── */
+    function buildGallery() {
+      const masonry = document.getElementById('masonry');
+      document.getElementById('photo-count').textContent = `${photoFiles.length} photos`;
+
+      photoFiles.forEach((src, i) => {
+        const tilt = TILT_OPTIONS[i % TILT_OPTIONS.length];
+        const hasTag = rand() > 0.45; // ~55% get a date tag
+
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.style.transform = `rotate(${tilt}deg)`;
+        card.style.transitionDelay = `${(i % 8) * 45}ms`;
+        card.dataset.index = i;
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `Memory ${i + 1}`;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.onerror = function () {
+          this.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='220'%3E%3Crect fill='%23ede3d1' width='300' height='220'/%3E%3Ctext fill='%23c9a97a' font-family='serif' font-size='12' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EPhoto%3C/text%3E%3C/svg%3E`;
+        };
+
+        card.appendChild(img);
+
+        if (hasTag) {
+          const tag = document.createElement('div');
+          tag.className = 'tag';
+          tag.textContent = 'a memory';
+          card.appendChild(tag);
+        }
+
+        card.addEventListener('click', () => openLb(i));
+        masonry.appendChild(card);
       });
+
+      /* scroll-reveal via IntersectionObserver */
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('revealed');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.photo-card').forEach(card => io.observe(card));
     }
 
-    // Lightbox functions
-    function openLightbox(src, alt) {
-      const lightbox = document.getElementById('lightbox');
-      const lightboxImg = document.getElementById('lightbox-img');
-      
-      lightboxImg.src = src;
-      lightboxImg.alt = alt || 'Photo';
-      lightbox.classList.add('active');
+    /* ── LIGHTBOX ── */
+    let currentIdx = 0;
+
+    function openLb(idx) {
+      currentIdx = idx;
+      const lb = document.getElementById('lb');
+      const img = document.getElementById('lb-img');
+      const cap = document.getElementById('lb-caption');
+
+      img.src = photoFiles[idx];
+      img.alt = `Memory ${idx + 1}`;
+      cap.textContent = `memory ${idx + 1} of ${photoFiles.length}`;
+      lb.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
-    function closeLightbox() {
-      const lightbox = document.getElementById('lightbox');
-      lightbox.classList.remove('active');
-      document.body.style.overflow = 'auto';
+    function closeLb() {
+      document.getElementById('lb').classList.remove('active');
+      document.body.style.overflow = '';
     }
 
-    // Close lightbox on background click
-    document.getElementById('lightbox').addEventListener('click', function(e) {
-      if (e.target === this || e.target.classList.contains('lightbox-content')) {
-        closeLightbox();
-      }
+    function navLb(dir) {
+      currentIdx = (currentIdx + dir + photoFiles.length) % photoFiles.length;
+      openLb(currentIdx);
+    }
+
+    document.getElementById('lb-close').addEventListener('click', closeLb);
+    document.getElementById('lb-backdrop').addEventListener('click', closeLb);
+    document.getElementById('lb-prev').addEventListener('click', () => navLb(-1));
+    document.getElementById('lb-next').addEventListener('click', () => navLb(1));
+
+    document.addEventListener('keydown', e => {
+      const lb = document.getElementById('lb');
+      if (!lb.classList.contains('active')) return;
+      if (e.key === 'Escape')       closeLb();
+      if (e.key === 'ArrowLeft')    navLb(-1);
+      if (e.key === 'ArrowRight')   navLb(1);
     });
 
-    // Close on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeLightbox();
-      }
+    /* swipe support on mobile */
+    let touchStartX = 0;
+    document.getElementById('lb').addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    document.getElementById('lb').addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(dx) > 50) navLb(dx < 0 ? 1 : -1);
     });
 
-    // ===========================================
-    // 🚀 DEPLOYMENT DIAGNOSTIC TOOL
-    // ===========================================
-    // Run this on your DEPLOYED site to identify image issues:
-    // 1. Open browser console (F12)
-    // 2. Run: diagnoseDeployment()
-    // ===========================================
-
-    window.diagnoseDeployment = function() {
+    /* ── DIAGNOSTICS ── */
+    window.checkImages = function () {
       console.clear();
-      console.log('🔍 DEPLOYMENT DIAGNOSTIC - Finding image issues...\n');
+      console.log('📷 Photo Album – Image Check\n');
+      const test = photoFiles[20]; // a stable filename
+      const img = new Image();
+      img.onload  = () => console.log('✅ Images accessible at: assets/images/photos/');
+      img.onerror = () => {
+        console.warn('❌ Images not found.');
+        console.log('Solutions:\n  1. Upload assets/images/photos/ folder to server root\n  2. Check file permissions (644 files, 755 folders)\n  3. Check case sensitivity');
+        document.getElementById('diag-panel').classList.add('show');
+      };
+      img.src = test;
+    };
 
-      const testImg = 'whatsapp-image-2026-01-11-at-83445-pm.jpeg';
-      const paths = [
-        'assets/images/photos/',
-        './assets/images/photos/',
-        '/assets/images/photos/',
-        'imgs/pics/',
-        './imgs/pics/',
-        '/imgs/pics/',
-        'pics/',
-        './pics/',
-        '/pics/'
-      ];
-
-      let workingPath = null;
-      let tested = 0;
-      const total = paths.length;
-
-      return new Promise((resolve) => {
-        paths.forEach((basePath, index) => {
-          setTimeout(() => {
-            const img = new Image();
-            const fullUrl = window.location.origin + (basePath.startsWith('/') ? '' : '/') + basePath + testImg;
-
-            img.onload = function() {
-              tested++;
-              if (!workingPath) {
-                workingPath = basePath;
-                console.log('✅✅✅ SOLUTION FOUND! ✅✅✅');
-                console.log(`   Working path: "${basePath}"`);
-                console.log(`   Full URL: ${fullUrl}`);
-                console.log('\n📋 TO FIX YOUR DEPLOYMENT:');
-                console.log(`   1. Create folder structure: ${basePath.replace(/^\.\//, '').replace(/\/$/, '')}`);
-                console.log(`   2. Upload all images to: ${window.location.origin}/${basePath.replace(/^\.\//, '')}`);
-                console.log('   3. Ensure file permissions: 644 (files), 755 (folders)');
-                console.log('\n🔄 Or run: fixImagePaths("' + basePath + '")');
-              }
-
-              if (tested === total) {
-                if (!workingPath) {
-                  console.log('\n❌❌❌ NO SOLUTION FOUND ❌❌❌');
-                  console.log('   Images not found at any tested path');
-                  console.log('   Check if assets folder was uploaded!');
-                  console.log('\n🔍 Manual test URLs:');
-                  paths.forEach(p => {
-                    console.log(`   ${window.location.origin}${p}${testImg}`);
-                  });
-                }
-                resolve(workingPath);
-              }
-            };
-
-            img.onerror = function() {
-              tested++;
-              console.log(`❌ Failed: ${basePath}`);
-              if (tested === total && !workingPath) {
-                console.log('\n❌❌❌ NO SOLUTION FOUND ❌❌❌');
-                console.log('   Images not found at any tested path');
-                console.log('   Check if assets folder was uploaded!');
-                resolve(null);
-              }
-            };
-
-            img.src = fullUrl;
-          }, index * 500);
-        });
+    window.diagnoseDeployment = function () {
+      console.clear();
+      console.log('🔍 Running deployment diagnostics…');
+      const filename = 'whatsapp-image-2026-01-11-at-83445-pm.jpeg';
+      const bases = ['assets/images/photos/', './assets/images/photos/', '/assets/images/photos/'];
+      bases.forEach((base, i) => {
+        setTimeout(() => {
+          const img = new Image();
+          img.onload  = () => console.log(`✅ WORKS: ${base}`);
+          img.onerror = () => console.log(`❌ Failed: ${base}`);
+          img.src = base + filename;
+        }, i * 400);
       });
     };
 
-    // Quick fix function (use result from diagnoseDeployment)
-    window.fixImagePaths = function(correctPath) {
-      if (!correctPath) {
-        console.error('❌ No path provided! Run diagnoseDeployment() first.');
-        return;
-      }
-
-      console.log(`🔧 Updating all image paths to: "${correctPath}"`);
-      photos.forEach((photo, index) => {
-        const filename = photo.src.split('/').pop();
-        photo.src = correctPath + filename;
-      });
-
-      // Reload images
-      const imgElements = document.querySelectorAll('.photo-img');
-      imgElements.forEach(img => {
-        const filename = img.src.split('/').pop();
-        const newUrl = window.location.origin + (correctPath.startsWith('/') ? '' : '/') + correctPath + filename;
-        img.src = newUrl;
-      });
-
-      console.log('✅✅✅ Paths updated! Refresh page to see changes. ✅✅✅');
-    };
-
-    // CONVERT TO EXTERNAL HOSTING URLs
-    window.convertToImgurUrls = function() {
-      console.log('🖼️ IMGUR URL CONVERSION HELPER');
-      console.log('===============================');
-      console.log('Replace these local paths with your Imgur URLs:');
-      console.log('');
-
-      photos.forEach((photo, index) => {
-        const filename = photo.src.split('/').pop();
-        console.log(`${index + 1}. ${filename}`);
-        console.log(`   FROM: assets/images/photos/${filename}`);
-        console.log(`   TO:   [PASTE YOUR IMGUR URL HERE]`);
-        console.log('');
-      });
-
-      console.log('📝 INSTRUCTIONS:');
-      console.log('1. Upload each image to Imgur');
-      console.log('2. Copy the direct image URL');
-      console.log('3. Replace the paths in the photos array above');
-      console.log('4. Commit and redeploy');
-      console.log('===============================');
-    };
-
-    // Initialize on load
-    window.addEventListener('load', () => {
-      // Render all photos
-      renderPhotos();
-
-      // Adjust container height
-      setTimeout(() => {
-        const container = document.getElementById('album-container');
-        if (container) {
-          const items = container.querySelectorAll('.photo-item');
-          if (items.length > 0) {
-            let maxBottom = 0;
-            items.forEach(item => {
-              const bottom = item.offsetTop + item.offsetHeight;
-              if (bottom > maxBottom) maxBottom = bottom;
-            });
-            container.style.height = `${maxBottom + 100}px`;
-          }
-        }
-      }, 2000);
-
-      // Show deployment help immediately
-      console.log('\n═══════════════════════════════════════════════');
-      console.log('🖼️  PHOTO ALBUM DIAGNOSTIC TOOLS');
-      console.log('═══════════════════════════════════════════════');
-      console.log('If images don\'t load, run these commands:');
-      console.log('');
-      console.log('1. Quick check: checkImages()');
-      console.log('2. Full diagnostic: diagnoseDeployment()');
-      console.log('');
-      console.log('These will tell you exactly what\'s wrong!');
-      console.log('═══════════════════════════════════════════════\n');
-
-      // Show deployment help for first-time users
-      setTimeout(() => {
-        const failedImages = document.querySelectorAll('img[style*="opacity: 0.6"]');
-        if (failedImages.length > 0) {
-          console.log('\n⚠️  IMAGE LOADING ISSUES DETECTED ⚠️');
-          console.log(`   ${failedImages.length} images failed to load`);
-          console.log('   This usually means the assets folder wasn\'t uploaded');
-          console.log('   Run: checkImages()');
-          console.log('   Or check: https://yoursite.com/assets/images/photos/');
-
-          // Show visual diagnostic panel
-          const panel = document.getElementById('diagnostic-panel');
-          if (panel) {
-            panel.classList.remove('hidden');
-          }
-        }
-      }, 3000);
-    });
-
-    // Responsive repositioning
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        if (window.innerWidth > 768) {
-          const container = document.getElementById('album-container');
-          if (container) {
-            const items = container.querySelectorAll('.photo-item');
-            const containerWidth = container.offsetWidth || 1200;
-
-            items.forEach((item, index) => {
-              const photo = photos[index];
-              if (photo) {
-                const baseX = (index * 280) % (containerWidth - 350);
-                const baseY = Math.floor((index * 280) / (containerWidth - 350)) * 320;
-                const randomX = (Math.random() - 0.5) * 100;
-                const randomY = (Math.random() - 0.5) * 80;
-
-                item.style.left = `${Math.max(20, baseX + randomX)}px`;
-                item.style.top = `${Math.max(20, baseY + randomY)}px`;
-                item.style.transform = `rotate(${photo.rotation}deg)`;
-              }
-            });
-          }
-        }
-      }, 250);
-    });
+    /* ── INIT ── */
+    buildGallery();
   </script>
 </body>
 </html>
