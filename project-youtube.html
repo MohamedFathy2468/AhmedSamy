@@ -641,6 +641,104 @@
       margin-top: 3px;
     }
 
+    .video-row.featured-video {
+      border-left-color: var(--red);
+      background:
+        linear-gradient(120deg, rgba(232,35,10,0.16), rgba(232,35,10,0.04) 42%, transparent 78%),
+        var(--card);
+    }
+
+    .video-row.featured-video:hover {
+      background:
+        linear-gradient(120deg, rgba(232,35,10,0.2), rgba(232,35,10,0.07) 44%, transparent 80%),
+        var(--card2);
+    }
+
+    .video-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 9px 16px;
+      border-radius: 100px;
+      border: 1px solid rgba(232,35,10,0.45);
+      background: var(--red);
+      color: #fff;
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .video-link:hover {
+      background: var(--red-dark);
+      border-color: var(--red);
+    }
+
+    .video-media {
+      width: 210px;
+      flex-shrink: 0;
+    }
+
+    .video-thumb-link {
+      position: relative;
+      display: block;
+      border-radius: 14px;
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    .video-thumb-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 36%, rgba(0,0,0,0.52) 100%);
+      z-index: 1;
+    }
+
+    .video-thumb {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      transform: scale(1.01);
+      transition: transform 0.35s ease, filter 0.35s ease;
+    }
+
+    .video-thumb-link:hover .video-thumb {
+      transform: scale(1.06);
+      filter: saturate(1.12);
+    }
+
+    .video-play-pill {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(16,16,16,0.78);
+      color: #fff;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      backdrop-filter: blur(8px);
+    }
+
+    html.light .video-play-pill {
+      background: rgba(255,255,255,0.88);
+      color: #2a2520;
+      border-color: rgba(0,0,0,0.12);
+    }
+
     /* ── GEOGRAPHY ── */
     .geo-grid {
       display: grid;
@@ -1031,6 +1129,7 @@
       .geo-left, .geo-right { padding: 32px 24px; }
       .video-row { grid-template-columns: 36px 1fr; padding: 20px; gap: 16px; }
       .video-hours { display: none; }
+      .video-row.featured-video .video-media { grid-column: 2; width: 100%; max-width: 320px; margin-top: 4px; }
       .comments-grid { grid-template-columns: 1fr; }
       .comment-card { padding: 28px 24px; }
       .cta-section { padding: 80px 20px; }
@@ -1252,6 +1351,27 @@
         <div class="video-hours">
           <div class="video-hours-num">53.8</div>
           <div class="video-hours-label">Hours Collective</div>
+        </div>
+      </div>
+
+      <div class="video-row featured-video">
+        <div class="video-rank">NEW</div>
+        <div class="video-info">
+          <div class="video-name">CS50 Final Project - Ahmed Samy</div>
+          <div class="video-desc">A featured project walkthrough that highlights the final concept, execution details, and technical polish.</div>
+          <a href="https://youtu.be/yIupIolg29c" target="_blank" rel="noopener" class="video-link" aria-label="Watch CS50 Final Project video on YouTube">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            Watch on YouTube
+          </a>
+        </div>
+        <div class="video-media">
+          <a href="https://youtu.be/yIupIolg29c" target="_blank" rel="noopener" class="video-thumb-link" aria-label="Open CS50 Final Project video">
+            <img src="https://i.ytimg.com/vi/yIupIolg29c/hqdefault.jpg" alt="CS50 Final Project - Ahmed Samy thumbnail" class="video-thumb" loading="lazy">
+            <span class="video-play-pill">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              Play Video
+            </span>
+          </a>
         </div>
       </div>
     </div>

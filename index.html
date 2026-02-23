@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -146,7 +146,6 @@ nav{
   border-top-color:rgba(255,255,255,0.28);
   box-shadow:0 8px 40px rgba(0,0,0,0.5),0 1px 0 rgba(255,255,255,0.12) inset,0 -1px 0 rgba(0,0,0,0.25) inset;
   overflow:hidden;
-  /* Only transition position/shadow, NOT left/transform to avoid jumpiness */
   transition:top .3s ease, box-shadow .3s ease, background .35s ease;
 }
 nav::before{
@@ -173,7 +172,6 @@ html.light nav.scrolled{
   box-shadow:0 16px 48px rgba(0,0,0,0.16),0 1px 0 rgba(255,255,255,0.95) inset;
 }
 
-/* Nav inner layout: logo | center links | right controls */
 .nav-logo{
   position:absolute;
   left:14px;
@@ -262,7 +260,6 @@ html.light .icon-moon{display:none;} html.light .icon-sun{display:block;}
 .hamburger.open span:nth-child(2){opacity:0;}
 .hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
 
-/* Mobile menu */
 .mobile-menu{
   position:fixed;
   top:calc(var(--nav-height) + 22px);
@@ -638,6 +635,181 @@ html:not(.light) .works-slider .swiper-pagination-bullet-active{
   box-shadow:0 4px 16px rgba(232,35,10,.35),0 2px 8px rgba(181,26,7,.25);
 }
 
+/* ═══════════════════════════════════
+   YOUTUBE FEATURE BLOCK
+═══════════════════════════════════ */
+.yt-feature{
+  margin-top:48px;
+  position:relative;
+  border-radius:28px;
+  overflow:hidden;
+  background:var(--glass-bg);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border:1px solid var(--glass-border);
+  border-top-color:var(--glass-border-top);
+  box-shadow:var(--glass-shadow),inset 0 1px 0 var(--glass-shine);
+}
+.yt-feature::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(140deg,rgba(255,255,255,0.06) 0%,transparent 55%);
+  z-index:0;
+}
+
+/* Red accent glow top-left */
+.yt-feature::after{
+  content:'';position:absolute;top:-60px;left:-60px;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,35,10,0.18) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+.yt-feature-inner{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:1fr 1.1fr;
+  gap:0;
+  align-items:stretch;
+}
+
+/* Left info panel */
+.yt-info{
+  padding:44px 40px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:0;
+  border-right:1px solid var(--rule);
+}
+
+.yt-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(232,35,10,0.12);
+  border:1px solid rgba(232,35,10,0.28);
+  border-radius:100px;
+  padding:5px 14px 5px 8px;
+  width:fit-content;
+  margin-bottom:22px;
+}
+.yt-badge-dot{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.yt-badge-dot svg{display:block;}
+.yt-badge-text{
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);font-weight:600;
+}
+
+.yt-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  letter-spacing:.03em;
+  color:var(--text-head);
+  line-height:1.05;
+  margin-bottom:14px;
+}
+
+.yt-desc{
+  font-family:'Lora',serif;font-style:italic;
+  font-size:.92rem;line-height:1.75;
+  color:var(--text-dim);
+  margin-bottom:28px;
+  max-width:320px;
+}
+
+.yt-meta-row{
+  display:flex;align-items:center;gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:30px;
+}
+.yt-meta-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-muted);font-weight:500;
+}
+.yt-meta-item svg{color:var(--accent);flex-shrink:0;}
+
+.yt-watch-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--accent);
+  color:#fff;
+  padding:13px 26px;
+  border-radius:100px;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;
+  text-decoration:none;
+  width:fit-content;
+  border:none;cursor:pointer;
+  transition:background .2s,transform .2s,box-shadow .2s;
+  box-shadow:0 6px 24px rgba(232,35,10,0.35);
+}
+.yt-watch-btn:hover{
+  background:var(--accent-dark);
+  transform:translateY(-2px);
+  box-shadow:0 10px 32px rgba(232,35,10,0.45);
+}
+.yt-watch-btn svg{transition:transform .2s;}
+.yt-watch-btn:hover svg{transform:translateX(3px);}
+
+/* Right video embed panel */
+.yt-embed-wrap{
+  position:relative;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:320px;
+  border-radius:0 28px 28px 0;
+  overflow:hidden;
+}
+
+/* Subtle red glow on right side */
+.yt-embed-wrap::before{
+  content:'';position:absolute;bottom:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,35,10,0.15) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+.yt-iframe-container{
+  position:relative;
+  width:100%;
+  height:100%;
+  min-height:320px;
+}
+.yt-iframe-container iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+  display:block;
+}
+
+/* Decorative corner accent */
+.yt-corner-accent{
+  position:absolute;
+  top:16px;right:16px;
+  width:36px;height:36px;
+  border-top:2px solid rgba(232,35,10,0.5);
+  border-right:2px solid rgba(232,35,10,0.5);
+  border-radius:0 8px 0 0;
+  pointer-events:none;
+  z-index:2;
+}
+.yt-corner-accent-bl{
+  position:absolute;
+  bottom:16px;left:16px;
+  width:36px;height:36px;
+  border-bottom:2px solid rgba(232,35,10,0.3);
+  border-left:2px solid rgba(232,35,10,0.3);
+  border-radius:0 0 0 8px;
+  pointer-events:none;
+  z-index:2;
+}
+
 .photo-cta{
   margin-top:36px;
   background:var(--glass-bg);
@@ -809,12 +981,11 @@ footer{
 .lb-close:hover{background:rgba(255,255,255,.18);transform:rotate(90deg);}
 
 /* ═══════════════════════════════════
-   RESPONSIVE — 1024px (switch to hamburger)
+   RESPONSIVE — 1024px
 ═══════════════════════════════════ */
 @media(max-width:1024px){
   :root{--nav-height:52px;}
 
-  /* Nav: center it, hide logo & links, show hamburger */
   nav{
     width:auto;
     min-width:120px;
@@ -824,19 +995,17 @@ footer{
   .nav-center{display:none;}
   .hamburger{display:flex;}
 
-  /* Nav-right becomes the only visible thing */
   .nav-right{
     position:static;
     top:auto;right:auto;
     transform:none;
   }
 
-  /* Mobile performance */
   body::after{display:none;}
   .ticker-inner{animation:none;}
   .reveal,.reveal.in{opacity:1;transform:none;transition:none;}
   .works-carousel,.works-slider{overflow:hidden !important;}
-  nav,.mobile-menu,.stat-card,.tl-content,.about-card,.photo-cta,.contact-card,.cert-card,.works-slider .swiper-slide{
+  nav,.mobile-menu,.stat-card,.tl-content,.about-card,.photo-cta,.contact-card,.cert-card,.works-slider .swiper-slide,.yt-feature{
     backdrop-filter:none !important;
     -webkit-backdrop-filter:none !important;
   }
@@ -860,6 +1029,12 @@ footer{
   .about-grid{grid-template-columns:1fr;gap:40px;}
   .cert-grid{grid-template-columns:repeat(3,1fr);}
   .contact-items-row{grid-template-columns:1fr 1fr;gap:12px;}
+
+  /* YT Feature responsive */
+  .yt-feature-inner{grid-template-columns:1fr;}
+  .yt-info{border-right:none;border-bottom:1px solid var(--rule);padding:32px 28px;}
+  .yt-embed-wrap{border-radius:0 0 28px 28px;min-height:280px;}
+  .yt-iframe-container{min-height:280px;}
 }
 
 /* ═══════════════════════════════════
@@ -884,6 +1059,10 @@ footer{
   .cta-section{padding:80px 20px;}
   footer{flex-direction:column;text-align:center;align-items:center;padding:28px 20px;}
   #scrollToTop{right:16px;bottom:16px;width:40px;height:40px;}
+
+  .yt-info{padding:28px 22px;}
+  .yt-embed-wrap{min-height:240px;}
+  .yt-iframe-container{min-height:240px;}
 }
 
 /* ═══════════════════════════════════
@@ -943,6 +1122,14 @@ footer{
   .cta-btns .btn-primary,.cta-btns .btn-ghost{width:min(100%,280px);}
   footer{padding:22px 16px;gap:12px;}
   #scrollToTop{right:12px;bottom:12px;width:38px;height:38px;}
+
+  .yt-feature{margin-top:36px;}
+  .yt-info{padding:22px 18px;}
+  .yt-title{font-size:1.5rem;}
+  .yt-desc{font-size:.88rem;margin-bottom:20px;}
+  .yt-embed-wrap{min-height:200px;}
+  .yt-iframe-container{min-height:200px;}
+  .yt-watch-btn{padding:11px 20px;font-size:10px;}
 }
 
 /* ═══════════════════════════════════
@@ -1259,6 +1446,58 @@ footer{
       <div class="swiper-pagination"></div>
     </div>
   </div>
+
+  <!-- YOUTUBE FEATURED VIDEO -->
+  <div class="yt-feature reveal">
+    <div class="yt-feature-inner">
+
+      <!-- Left: Info Panel -->
+      <div class="yt-info">
+        <div class="yt-badge">
+          <div class="yt-badge-dot">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <span class="yt-badge-text">Featured Video</span>
+        </div>
+
+        <h3 class="yt-title">CS50 Final Project<br>Ahmed Samy</h3>
+        <p class="yt-desc">A complete showcase of the CS50 final project, covering the concept, build flow, and final result.</p>
+
+        <div class="yt-meta-row">
+          <div class="yt-meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42C1 8.15 1 11.68 1 11.68s0 3.53.46 5.26a2.78 2.78 0 0 0 1.95 1.96C5.12 19.36 12 19.36 12 19.36s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96C23 15.21 23 11.68 23 11.68s0-3.53-.46-5.26z"/><polygon points="9.75 15.02 15.5 11.68 9.75 8.34 9.75 15.02" fill="currentColor"/></svg>
+            YouTube
+          </div>
+          <div class="yt-meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            CS50 Final Project
+          </div>
+        </div>
+
+        <a href="https://youtu.be/yIupIolg29c" target="_blank" rel="noopener" class="yt-watch-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Watch on YouTube
+        </a>
+      </div>
+
+      <!-- Right: Embedded Video -->
+      <div class="yt-embed-wrap">
+        <div class="yt-corner-accent"></div>
+        <div class="yt-corner-accent-bl"></div>
+        <div class="yt-iframe-container">
+          <iframe
+            src="https://www.youtube.com/embed/yIupIolg29c?rel=0&modestbranding=1&color=white"
+            title="CS50 Final Project - Ahmed Samy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- END YOUTUBE FEATURED VIDEO -->
 
   <a href="photo-album.html" class="photo-cta">
     <div>
